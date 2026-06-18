@@ -1,15 +1,19 @@
 import { CheckCircle2, Circle } from 'lucide-react'
 import { PageHeader } from '@/components/page-header'
 import { ReadinessRing } from '@/components/readiness-ring'
+import { StatusCard } from '@/components/status-card'
 import { QuickActions } from '@/components/quick-actions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { db } from '@/lib/db'
 import { CATEGORY_LABELS, type DocumentCategory } from '@/lib/types'
 
 export default async function DashboardPage() {
-  const [documents, reminders] = await Promise.all([
+  const [owner, documents, reminders, checkin, { mode }] = await Promise.all([
+    db.getOwner(),
     db.getDocuments(),
     db.getReminders(),
+    db.getCheckin(),
+    db.getTriggerState(),
   ])
 
   const allCategories = Object.keys(CATEGORY_LABELS) as DocumentCategory[]
@@ -27,21 +31,25 @@ export default async function DashboardPage() {
         description="Everything you'd ever need to find, file, or hand over — in one calm place."
       />
 
-      <section className="grid gap-5 lg:grid-cols-4">
+      <section className="grid gap-5 lg:grid-cols-3">
         <Card className="rounded-3xl lg:col-span-1">
           <CardHeader>
             <CardTitle className="text-base">Vault readiness</CardTitle>
-            <CardDescription>How complete your vault is across every category.</CardDescription>
+            <CardDescription>How prepared your vault is across every category.</CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center pb-8">
             <ReadinessRing value={readiness} />
           </CardContent>
         </Card>
 
-        <div className="flex flex-col gap-3 lg:col-span-3">
-          <h2 className="font-serif text-xl font-semibold">Quick actions</h2>
-          <QuickActions />
+        <div className="lg:col-span-2">
+          <StatusCard mode={mode} checkin={checkin} />
         </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-serif text-xl font-semibold">Quick actions</h2>
+        <QuickActions />
       </section>
 
       <section className="flex flex-col gap-3">

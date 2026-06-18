@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircleHeart, FilePlus2, Siren, BellRing, ShieldCheck } from 'lucide-react'
+import { MessageCircleHeart, FilePlus2, Siren, BellRing } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const actions = [
@@ -31,18 +31,11 @@ const actions = [
     icon: Siren,
     tone: 'hover:border-emergency/50',
   },
-  {
-    title: 'Manage check-in',
-    description: 'Your safety net cadence',
-    href: '/settings/checkin',
-    icon: ShieldCheck,
-    tone: 'hover:border-primary/40',
-  },
 ]
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {actions.map((a) => {
         const Icon = a.icon
         return (
