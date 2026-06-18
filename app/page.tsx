@@ -100,7 +100,7 @@ export default function LandingPage() {
             The family safety net that thinks for itself
           </Badge>
           <h1 className="font-heading text-5xl leading-[1.05] text-balance text-foreground lg:text-6xl">
-            Everything your family would need, the moment they need it.
+            Everything you'd ever need to find, file, or hand over — in one calm place.
           </h1>
           <p className="max-w-md text-lg leading-relaxed text-muted-foreground text-pretty">
             Aegis is an AI agent that safeguards your documents, policies, and wishes — and guides the people you love
