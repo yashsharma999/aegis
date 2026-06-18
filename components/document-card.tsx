@@ -1,7 +1,8 @@
 import { FileText, Lock } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CATEGORY_LABELS, type Document } from '@/lib/types'
+import { DeleteDocumentButton } from '@/components/delete-document-button'
+import { type Document } from '@/lib/types'
 
 export function DocumentCard({ doc }: { doc: Document }) {
   return (
@@ -11,15 +12,17 @@ export function DocumentCard({ doc }: { doc: Document }) {
           <span className="flex size-10 items-center justify-center rounded-full border border-border text-foreground/70 transition-colors group-hover:border-foreground/30">
             <FileText className="size-5" strokeWidth={1.75} />
           </span>
-          {doc.sensitive ? (
-            <Badge variant="outline" className="gap-1 rounded-full border-accent/50 bg-accent/20 text-accent-foreground">
-              <Lock className="size-3" />
-              Sensitive
-            </Badge>
-          ) : null}
+          <div className="flex items-center gap-1">
+            {doc.sensitive ? (
+              <Badge variant="outline" className="gap-1 rounded-full border-accent/50 bg-accent/20 text-accent-foreground">
+                <Lock className="size-3" />
+                Sensitive
+              </Badge>
+            ) : null}
+            <DeleteDocumentButton documentId={doc.id} title={doc.title} />
+          </div>
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="overline">{CATEGORY_LABELS[doc.category]}</span>
           <h3 className="font-serif text-lg font-semibold leading-snug tracking-tight text-balance">
             {doc.title}
           </h3>

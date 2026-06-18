@@ -98,6 +98,33 @@ export const db = {
     }
   },
 
+  // Deletes a document + its chunks (scoped to the user) in one transaction and
+  // returns the storageKey so the caller can clean up the stored object. Returns
+  // null if the document doesn't exist / isn't the user's.
+  deleteDocument: async (documentId: string): Promise<{ storageKey: string | null } | null> => {
+    const id = await uid()
+    if (!id) return null
+    const [doc] = await orm
+      .select({ storageKey: schema.document.storageKey })
+      .from(schema.document)
+      .where(and(eq(schema.document.userId, id), eq(schema.document.id, documentId)))
+    if (!doc) return null
+    await orm.transaction(async (tx) => {
+      await tx
+        .delete(schema.documentChunk)
+        .where(
+          and(
+            eq(schema.documentChunk.userId, id),
+            eq(schema.documentChunk.documentId, documentId),
+          ),
+        )
+      await tx
+        .delete(schema.document)
+        .where(and(eq(schema.document.userId, id), eq(schema.document.id, documentId)))
+    })
+    return { storageKey: doc.storageKey }
+  },
+
   getPolicies: async (): Promise<Policy[]> => {
     const id = await uid()
     if (!id) return []

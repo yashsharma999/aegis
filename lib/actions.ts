@@ -7,7 +7,13 @@ import { revalidatePath } from 'next/cache'
 import { db } from './db'
 import { askAgent, type AgentReply } from './agent'
 import { transitions } from './checkin'
+import { getSessionUser } from './session'
+import { ingestDocument } from './documents/ingest'
+import { PdfPasswordError } from './documents/parse'
+import { deleteObject } from './storage'
 import type { AppMode, TriggerState } from './types'
+
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024 // 20 MB
 
 export async function sendAgentMessage(
   message: string,
@@ -74,8 +80,61 @@ export async function confirmCheckin() {
   revalidatePath('/settings/checkin')
 }
 
-export async function addDocument(_formData: FormData) {
-  // TODO: persist uploaded file metadata + embeddings to Aurora pgvector.
-  // For the demo we just acknowledge — the mock store is read-only seed data.
+export type AddDocumentResult =
+  | { ok: true; documentId: string; chunkCount: number }
+  | {
+      ok: false
+      error: 'unauthorized' | 'no_file' | 'not_pdf' | 'too_large' | 'needs_password' | 'wrong_password' | 'parse_failed'
+    }
+
+export async function addDocument(formData: FormData): Promise<AddDocumentResult> {
+  const user = await getSessionUser()
+  if (!user) return { ok: false, error: 'unauthorized' }
+
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: 'no_file' }
+  if (file.type && file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    return { ok: false, error: 'not_pdf' }
+  }
+  if (file.size > MAX_UPLOAD_BYTES) return { ok: false, error: 'too_large' }
+
+  const password = (formData.get('password') as string)?.trim() || undefined
+  const bytes = new Uint8Array(await file.arrayBuffer())
+
+  try {
+    const result = await ingestDocument({
+      userId: user.id,
+      bytes,
+      fileName: file.name,
+      mimeType: file.type || 'application/pdf',
+      category: (formData.get('category') as string) || 'digital',
+      title: (formData.get('title') as string) || undefined,
+      notes: (formData.get('notes') as string) || undefined,
+      sensitive: formData.get('sensitive') === 'on' || formData.get('sensitive') === 'true',
+      password,
+    })
+    revalidatePath('/vault/documents')
+    return { ok: true, documentId: result.documentId, chunkCount: result.chunkCount }
+  } catch (err) {
+    if (err instanceof PdfPasswordError) return { ok: false, error: err.reason }
+    console.error('addDocument failed:', err)
+    return { ok: false, error: 'parse_failed' }
+  }
+}
+
+export async function deleteDocument(documentId: string): Promise<{ ok: boolean }> {
+  const user = await getSessionUser()
+  if (!user) return { ok: false }
+  const result = await db.deleteDocument(documentId)
+  if (!result) return { ok: false }
+  if (result.storageKey) {
+    try {
+      await deleteObject(result.storageKey)
+    } catch (err) {
+      // The DB rows are already gone; a stray object isn't worth failing the action.
+      console.error('Failed to delete stored object:', err)
+    }
+  }
   revalidatePath('/vault/documents')
+  return { ok: true }
 }

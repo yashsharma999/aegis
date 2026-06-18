@@ -134,8 +134,32 @@ export const document = pgTable(
     notes: text("notes").notNull().default(""),
     sensitive: boolean("sensitive").notNull().default(false),
     uploadedAt: text("uploaded_at").notNull(),
+    // Document pipeline (nullable so seeded sample docs stay valid).
+    storageKey: text("storage_key"),
+    mimeType: text("mime_type"),
+    sizeBytes: integer("size_bytes"),
+    pageCount: integer("page_count"),
+    status: text("status").notNull().default("ready"), // processing | ready | failed
   },
   (t) => [primaryKey({ columns: [t.userId, t.id] })],
+);
+
+// Searchable text pieces extracted from a document (one document -> many chunks).
+// BM25 retrieval scores these, scoped to the owning user.
+export const documentChunk = pgTable(
+  "document_chunk",
+  {
+    userId: userFk(),
+    id: text("id").notNull(),
+    documentId: text("document_id").notNull(),
+    chunkIndex: integer("chunk_index").notNull(),
+    content: text("content").notNull(),
+    tokenCount: integer("token_count"),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.id] }),
+    index("document_chunk_user_doc_idx").on(t.userId, t.documentId),
+  ],
 );
 
 export const policy = pgTable(
