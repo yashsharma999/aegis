@@ -1,0 +1,32 @@
+# Local development database for Aegis.
+#
+# pgvector/pgvector:pg16 = Postgres 16 with the pgvector extension preinstalled,
+# so the later RAG phase can `CREATE EXTENSION vector;` without changing images.
+#
+# Host port is 5433 (not 5432) to avoid colliding with other Postgres containers
+# already running on this machine. In production this is replaced by Aurora.
+#
+#   pnpm db:up     -> start
+#   pnpm db:down   -> stop (data kept in the named volume)
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: aegis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aegis
+      POSTGRES_PASSWORD: aegis
+      POSTGRES_DB: aegis
+    ports:
+      - '5433:5432'
+    volumes:
+      - aegis-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U aegis -d aegis']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  aegis-pgdata:

@@ -38,7 +38,7 @@ export async function runTrigger(action: TriggerAction): Promise<TriggerState> {
       break
     case 'missed': {
       const missedCount = Math.min(checkin.missedCount + 1, checkin.threshold)
-      db.setCheckin({ ...checkin, missedCount })
+      await db.setCheckin({ ...checkin, missedCount })
       next = transitions.simulateMissedCheckin(prev, missedCount, checkin.threshold)
       break
     }
@@ -48,7 +48,7 @@ export async function runTrigger(action: TriggerAction): Promise<TriggerState> {
     case 'reset':
     default:
       next = transitions.reset()
-      db.setCheckin({
+      await db.setCheckin({
         ...checkin,
         missedCount: 0,
         lastCheckinAt: new Date().toISOString(),
@@ -56,7 +56,7 @@ export async function runTrigger(action: TriggerAction): Promise<TriggerState> {
       break
   }
 
-  db.setTriggerState(next)
+  await db.setTriggerState(next)
   revalidatePath('/trigger')
   revalidatePath('/dashboard')
   revalidatePath('/emergency')
@@ -65,7 +65,7 @@ export async function runTrigger(action: TriggerAction): Promise<TriggerState> {
 
 export async function confirmCheckin() {
   const checkin = await db.getCheckin()
-  db.setCheckin({
+  await db.setCheckin({
     ...checkin,
     missedCount: 0,
     lastCheckinAt: new Date().toISOString(),

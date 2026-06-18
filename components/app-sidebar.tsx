@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   ShieldCheck,
   LayoutDashboard,
@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { signOut } from '@/lib/auth'
+import { authClient } from '@/lib/auth-client'
 import type { Owner } from '@/lib/types'
 
 type NavItem = { title: string; href: string; icon: React.ElementType }
@@ -100,6 +100,14 @@ function NavSection({ label, items, pathname }: { label: string; items: NavItem[
 
 export function AppSidebar({ owner }: { owner: Owner }) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    router.push('/login')
+    router.refresh()
+  }
+
   const displayName = owner.name || owner.email.split('@')[0] || 'You'
   const initials = displayName
     .split(/[\s._-]+/)
@@ -144,17 +152,16 @@ export function AppSidebar({ owner }: { owner: Owner }) {
             <span className="truncate text-sm font-medium text-sidebar-foreground">{displayName}</span>
             <span className="truncate text-xs text-sidebar-foreground/60">{owner.email}</span>
           </div>
-          <form action={signOut}>
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
-              className="size-8 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-              aria-label="Sign out"
-            >
-              <LogOut className="size-4" />
-            </Button>
-          </form>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-8 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            aria-label="Sign out"
+            onClick={handleSignOut}
+          >
+            <LogOut className="size-4" />
+          </Button>
         </div>
       </SidebarFooter>
     </Sidebar>

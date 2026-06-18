@@ -1,26 +1,22 @@
-'use server'
-
-// UI-level auth actions. No password verification yet — any credentials sign in.
-// The email determines whether you see the demo vault or an empty one.
+// Better Auth server instance. The single source of truth for authentication.
 //
-// TODO: validate credentials against Better Auth / a real user store.
+// Backed by Aurora Postgres via the Drizzle adapter (lib/drizzle.ts +
+// lib/schema.ts). Email/password is enabled with auto sign-in after signup.
+// Session reads happen server-side via auth.api.getSession (see lib/session.ts);
+// the browser talks to this through the /api/auth catch-all route.
 
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { SESSION_COOKIE } from './constants'
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from '@better-auth/drizzle-adapter'
+import { db } from './drizzle'
+import * as schema from './schema'
 
-export async function signIn(email: string) {
-  const store = await cookies()
-  store.set(SESSION_COOKIE, email.trim().toLowerCase(), {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30,
-  })
-}
-
-export async function signOut() {
-  const store = await cookies()
-  store.delete(SESSION_COOKIE)
-  redirect('/login')
-}
+export const auth = betterAuth({
+  database: drizzleAdapter(db, { provider: 'pg', schema }),
+  emailAndPassword: {
+    enabled: true,
+    autoSignIn: true,
+    minPasswordLength: 6,
+  },
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL,
+})

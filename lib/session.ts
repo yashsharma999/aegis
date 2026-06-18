@@ -1,21 +1,34 @@
-// Server-side session helpers. Reads the signed-in email from a cookie.
+// Server-side session helpers, backed by Better Auth.
 //
-// This is a demo experience, so any signed-in user sees the fully-populated
-// sample vault — there is no real backend and no per-user storage.
-//
-// TODO: replace the cookie check with a real session (Better Auth) and
-// per-user data once a backend is wired up.
+// Reads the validated session from the request headers. During this auth phase
+// there is no per-user vault yet, so any authenticated user sees the sample
+// vault (see lib/db.ts). Per-user data lands in a later phase.
 
-import { cookies } from 'next/headers'
-import { SESSION_COOKIE } from './constants'
+import { headers } from 'next/headers'
+import { auth } from './auth'
 
-export async function getSessionEmail(): Promise<string | null> {
-  const store = await cookies()
-  return store.get(SESSION_COOKIE)?.value ?? null
+type SessionUser = {
+  id: string
+  name: string
+  email: string
 }
 
-// Any signed-in user gets the sample vault for the demo.
-export async function isDemoUser(): Promise<boolean> {
-  const email = await getSessionEmail()
-  return !!email
+async function getSession() {
+  return auth.api.getSession({ headers: await headers() })
+}
+
+export async function getSessionUser(): Promise<SessionUser | null> {
+  const session = await getSession()
+  if (!session) return null
+  const { id, name, email } = session.user
+  return { id, name, email }
+}
+
+export async function getSessionEmail(): Promise<string | null> {
+  return (await getSession())?.user.email ?? null
+}
+
+// True when a real user is signed in.
+export async function isAuthenticated(): Promise<boolean> {
+  return !!(await getSession())
 }

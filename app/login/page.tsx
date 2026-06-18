@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel, FieldError, FieldDescription } from "@/components/ui/field"
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group"
-import { signIn } from "@/lib/auth"
-import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/constants"
+import { toast } from "sonner"
+import { authClient } from "@/lib/auth-client"
 
 const MODE_HINTS = [
   { icon: Sun, label: "Everyday" },
@@ -46,16 +46,20 @@ export default function LoginPage() {
     e.preventDefault()
     if (!validate()) return
     setSubmitting(true)
-    // UI-only: no password check. The email decides demo vs empty vault.
-    await signIn(email.trim())
+    const { error } = await authClient.signIn.email({
+      email: email.trim(),
+      password,
+    })
+    if (error) {
+      setSubmitting(false)
+      const message =
+        error.message || "We couldn't sign you in. Check your email and password."
+      setErrors({ password: message })
+      toast.error(message)
+      return
+    }
     router.push("/dashboard")
     router.refresh()
-  }
-
-  function fillDemo() {
-    setEmail(DEMO_EMAIL)
-    setPassword(DEMO_PASSWORD)
-    setErrors({})
   }
 
   return (
@@ -174,17 +178,6 @@ export default function LoginPage() {
               </FieldDescription>
             </FieldGroup>
           </form>
-
-          <div className="mt-6 rounded-xl border border-dashed bg-secondary/40 p-4">
-            <p className="text-sm font-medium text-foreground">Just exploring?</p>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              Every account opens the same fully-populated sample vault. Use the demo
-              credentials below, or sign in with any email you like.
-            </p>
-            <Button type="button" variant="outline" size="sm" className="mt-3" onClick={fillDemo}>
-              Use demo account
-            </Button>
-          </div>
         </div>
       </section>
     </main>

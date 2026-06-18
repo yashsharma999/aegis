@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel, FieldError, FieldDescription } from "@/components/ui/field"
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group"
-import { signIn } from "@/lib/auth"
+import { toast } from "sonner"
+import { authClient } from "@/lib/auth-client"
 
 const SETUP_STEPS = [
   { icon: FileText, label: "File your documents & policies" },
@@ -53,8 +54,21 @@ export default function SignupPage() {
     e.preventDefault()
     if (!validate()) return
     setSubmitting(true)
-    // UI-only: no real account is created. Signing in opens the demo vault.
-    await signIn(email.trim())
+    const { error } = await authClient.signUp.email({
+      name: name.trim(),
+      email: email.trim(),
+      password,
+    })
+    if (error) {
+      setSubmitting(false)
+      const message =
+        error.message || "We couldn't create your vault. Please try again."
+      // A duplicate email is the most common failure — surface it on the field.
+      setErrors(/already|exist|taken/i.test(message) ? { email: message } : {})
+      toast.error(message)
+      return
+    }
+    // autoSignIn is on, so the user is already signed in.
     router.push("/dashboard")
     router.refresh()
   }
