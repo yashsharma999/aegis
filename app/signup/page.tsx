@@ -3,40 +3,47 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ShieldCheck, Eye, EyeOff, ArrowRight, Sun, Siren, Moon, Infinity as InfinityIcon } from "lucide-react"
+import { ShieldCheck, Eye, EyeOff, ArrowRight, FileText, Users, Bell, KeyRound } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel, FieldError, FieldDescription } from "@/components/ui/field"
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group"
 import { signIn } from "@/lib/auth"
-import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/constants"
 
-const MODE_HINTS = [
-  { icon: Sun, label: "Everyday" },
-  { icon: Siren, label: "Emergency" },
-  { icon: Moon, label: "Incapacity" },
-  { icon: InfinityIcon, label: "Legacy" },
+const SETUP_STEPS = [
+  { icon: FileText, label: "File your documents & policies" },
+  { icon: Users, label: "Name the people who matter" },
+  { icon: Bell, label: "Set renewal reminders" },
+  { icon: KeyRound, label: "Decide who sees what, and when" },
 ]
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter()
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirm, setConfirm] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirm?: string }>({})
   const [submitting, setSubmitting] = useState(false)
 
   function validate() {
-    const next: { email?: string; password?: string } = {}
+    const next: { name?: string; email?: string; password?: string; confirm?: string } = {}
+    if (!name.trim()) {
+      next.name = "Tell us what to call you."
+    }
     if (!email.trim()) {
       next.email = "Enter your email address."
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       next.email = "That doesn't look like a valid email."
     }
     if (!password) {
-      next.password = "Enter your password."
+      next.password = "Choose a password."
     } else if (password.length < 6) {
       next.password = "Password must be at least 6 characters."
+    }
+    if (confirm !== password) {
+      next.confirm = "Passwords don't match."
     }
     setErrors(next)
     return Object.keys(next).length === 0
@@ -46,16 +53,10 @@ export default function LoginPage() {
     e.preventDefault()
     if (!validate()) return
     setSubmitting(true)
-    // UI-only: no password check. The email decides demo vs empty vault.
+    // UI-only: no real account is created. Signing in opens the demo vault.
     await signIn(email.trim())
     router.push("/dashboard")
     router.refresh()
-  }
-
-  function fillDemo() {
-    setEmail(DEMO_EMAIL)
-    setPassword(DEMO_PASSWORD)
-    setErrors({})
   }
 
   return (
@@ -76,26 +77,27 @@ export default function LoginPage() {
 
         <div className="flex flex-col gap-8">
           <h1 className="max-w-md font-serif text-[2.75rem] font-semibold leading-[1.08] tracking-[-0.02em] text-balance">
-            Everything you&apos;d ever need to find, file, or hand over —{" "}
-            <span className="italic font-normal text-accent">in one calm place.</span>
+            Start the vault you&apos;ll be glad you kept —{" "}
+            <span className="italic font-normal text-accent">long before anyone needs it.</span>
           </h1>
           <p className="max-w-sm text-pretty leading-relaxed text-primary-foreground/70">
-            Your documents, policies, and wishes, safeguarded by an agent that knows exactly what to reveal, and when.
+            A few quiet minutes today saves the people you love from scrambling later. Here&apos;s
+            what setting up looks like.
           </p>
           <div className="flex flex-col">
             <span className="mb-3 text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground/45">
-              One vault, every season of life
+              Four steps to a calm vault
             </span>
-            {MODE_HINTS.map((m, i) => (
+            {SETUP_STEPS.map((s, i) => (
               <div
-                key={m.label}
+                key={s.label}
                 className="flex items-center gap-3 border-t border-primary-foreground/10 py-3 last:border-b"
               >
                 <span className="font-mono text-xs tabular-nums text-primary-foreground/40">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <m.icon className="size-4 text-accent" strokeWidth={1.75} />
-                <span className="text-sm text-primary-foreground/85">{m.label}</span>
+                <s.icon className="size-4 text-accent" strokeWidth={1.75} />
+                <span className="text-sm text-primary-foreground/85">{s.label}</span>
               </div>
             ))}
           </div>
@@ -114,13 +116,29 @@ export default function LoginPage() {
               <ShieldCheck className="size-5" />
             </span>
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-foreground">
-              Welcome back
+              Create your vault
             </h2>
-            <p className="leading-relaxed text-muted-foreground">Sign in to open your vault.</p>
+            <p className="leading-relaxed text-muted-foreground">
+              It takes a minute, and everything stays in one calm place.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
             <FieldGroup>
+              <Field data-invalid={!!errors.name}>
+                <FieldLabel htmlFor="name">Full name</FieldLabel>
+                <Input
+                  id="name"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="Ravi Sharma"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  aria-invalid={!!errors.name}
+                />
+                <FieldError>{errors.name}</FieldError>
+              </Field>
+
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
@@ -142,8 +160,8 @@ export default function LoginPage() {
                   <InputGroupInput
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="Enter your password"
+                    autoComplete="new-password"
+                    placeholder="At least 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     aria-invalid={!!errors.password}
@@ -161,30 +179,33 @@ export default function LoginPage() {
                 <FieldError>{errors.password}</FieldError>
               </Field>
 
+              <Field data-invalid={!!errors.confirm}>
+                <FieldLabel htmlFor="confirm">Confirm password</FieldLabel>
+                <Input
+                  id="confirm"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="Re-enter your password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  aria-invalid={!!errors.confirm}
+                />
+                <FieldError>{errors.confirm}</FieldError>
+              </Field>
+
               <Button type="submit" size="lg" className="w-full" disabled={submitting}>
-                {submitting ? "Opening your vault..." : "Sign in"}
+                {submitting ? "Setting up your vault..." : "Create vault"}
                 {!submitting && <ArrowRight data-icon="inline-end" />}
               </Button>
 
               <FieldDescription className="text-center">
-                New here?{" "}
-                <Link href="/signup" className="font-medium text-foreground underline underline-offset-4">
-                  Create a vault
+                Already have a vault?{" "}
+                <Link href="/login" className="font-medium text-foreground underline underline-offset-4">
+                  Sign in
                 </Link>
               </FieldDescription>
             </FieldGroup>
           </form>
-
-          <div className="mt-6 rounded-xl border border-dashed bg-secondary/40 p-4">
-            <p className="text-sm font-medium text-foreground">Just exploring?</p>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              Every account opens the same fully-populated sample vault. Use the demo
-              credentials below, or sign in with any email you like.
-            </p>
-            <Button type="button" variant="outline" size="sm" className="mt-3" onClick={fillDemo}>
-              Use demo account
-            </Button>
-          </div>
         </div>
       </section>
     </main>
