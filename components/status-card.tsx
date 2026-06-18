@@ -56,7 +56,13 @@ export function StatusCard({ mode, checkin }: { mode: AppMode; checkin: CheckinC
           </span>
           <span className="font-medium">{formatDate(checkin.lastCheckinAt)}</span>
         </div>
-        <Button variant="outline" size="sm" className="w-fit" render={<Link href="/settings/checkin">Manage check-in</Link>} />
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-fit"
+          nativeButton={false}
+          render={<Link href="/settings/checkin">Manage check-in</Link>}
+        />
       </CardContent>
     </Card>
   )

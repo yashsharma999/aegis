@@ -14,7 +14,16 @@ export default async function TriggerPage() {
         title="Demo controls"
         description="Drive the mode/state machine: Everyday → Emergency → Incapacity → Pre-triggered → Awaiting Executor → Legacy Activated. Every transition is logged."
         action={
-          <Button variant="outline" render={<Link href="/family"><HeartHandshake className="size-4" data-icon="inline-start" />Open legacy preview</Link>} />
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={
+              <Link href="/family">
+                <HeartHandshake data-icon="inline-start" />
+                Open legacy preview
+              </Link>
+            }
+          />
         }
       />
       <TriggerConsole initialState={state} />
