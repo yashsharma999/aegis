@@ -42,7 +42,7 @@ export function ReadinessRing({
             {value}
             <span className="text-2xl text-muted-foreground">%</span>
           </span>
-          <span className="overline">Ready</span>
+          <span className="text-xs font-medium text-muted-foreground">Ready</span>
         </div>
       </div>
       <span className="text-sm font-medium text-muted-foreground">{label}</span>
