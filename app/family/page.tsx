@@ -9,12 +9,12 @@ const initialMessages: ChatBubble[] = [
   {
     id: 'f-1',
     from: 'agent',
-    text: `Hello ${familyName}. I'm Aegis, ${owner.name}'s assistant. First — I'm so deeply sorry for your loss. Ravi set me up to look after you and Aanya for exactly this moment, so you never have to face the paperwork alone.`,
+    text: `Hi ${familyName}. I'm Aegis — ${owner.name.split(' ')[0]}'s assistant. I haven't been able to reach ${owner.name.split(' ')[0]} and I'm checking in to make sure everything is okay. If you're in touch with them, please ask them to check in directly. If you need access to anything urgent right now, I'm here to help.`,
   },
   {
     id: 'f-2',
     from: 'agent',
-    text: `Before I share anything sensitive, I just need to confirm it's you. Ravi left a private question: what is the city of your anniversary?`,
+    text: `Before I share anything sensitive, I just need to confirm it's you. ${owner.name.split(' ')[0]} left a private question for verification: what is the city of your anniversary?`,
   },
   {
     id: 'f-3',
@@ -24,15 +24,15 @@ const initialMessages: ChatBubble[] = [
   {
     id: 'f-4',
     from: 'agent',
-    text: `Thank you, ${familyName} — verified. Take all the time you need. When you're ready, I can walk you through the first steps, help you claim the insurance, show you where the funds are, or share the messages Ravi left for you. There is no hurry on anything.`,
+    text: `Thank you, ${familyName} — verified. I'm here whenever you need me. I can walk you through any documents, insurance policies, or information ${owner.name.split(' ')[0]} wanted you to have access to. Just ask.`,
   },
 ]
 
 const suggestions = [
-  'How do I claim the insurance?',
-  'Where are the funds?',
-  'What were his funeral wishes?',
-  'Did he leave a message for me?',
+  'What documents are available?',
+  'How do I access the insurance?',
+  'Where are the important accounts?',
+  'Is there a message left for me?',
 ]
 
 export default function FamilyPage() {
@@ -53,7 +53,7 @@ export default function FamilyPage() {
       </div>
 
       <p className="mb-4 max-w-md text-pretty text-center text-sm text-muted-foreground">
-        This is what a verified family member sees once legacy mode is active — a calm, guided
+        This is what a verified contact sees when Aegis initiates a check-in — a calm, guided
         conversation, not a locked-down portal.
       </p>
 
@@ -65,7 +65,7 @@ export default function FamilyPage() {
           </span>
           <div className="flex flex-col leading-tight">
             <span className="font-serif text-base font-semibold">Aegis</span>
-            <span className="text-xs text-primary-foreground/70">Here for the Sharma family</span>
+            <span className="text-xs text-primary-foreground/70">Checking in on your behalf</span>
           </div>
         </div>
         <div className="h-[60vh] min-h-[460px]">

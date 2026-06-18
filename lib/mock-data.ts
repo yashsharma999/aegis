@@ -144,8 +144,8 @@ export const policies: Policy[] = [
     renewalDate: daysFromNow(10),
     claimContact: 'LIC Claims — 022 6827 6827',
     claimSteps: [
-      'Nominee (Priya) intimates the claim with the policy number.',
-      'Submit death certificate, ID proof and the original policy.',
+      'Named nominee intimates the claim with the policy number.',
+      'Submit the required documentation and ID proof to LIC.',
       'LIC processes term claims typically within 30 days.',
     ],
     notes: 'Nominee: Priya Sharma. Premium due in 10 days — keep the policy active.',
@@ -240,7 +240,7 @@ export const instructions: Instruction[] = [
     id: 'ins-financial',
     type: 'financial',
     title: 'Financial instructions',
-    body: 'Emergency fund is in the HDFC savings account. Mutual funds via CAMS — Priya is nominee on all folios. Claim the LIC term cover first; it is the largest and fastest. The 1Password emergency kit unlocks every account login.',
+    body: 'Emergency fund is in the HDFC savings account. Mutual funds via CAMS �� Priya is nominee on all folios. Claim the LIC term cover first; it is the largest and fastest. The 1Password emergency kit unlocks every account login.',
   },
 ]
 

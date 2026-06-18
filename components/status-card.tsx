@@ -37,8 +37,8 @@ export function StatusCard({ mode, checkin }: { mode: AppMode; checkin: CheckinC
       <CardContent className="flex flex-col gap-4">
         <p className="text-sm leading-relaxed text-muted-foreground">
           {healthy
-            ? `All calm. You check in every ${checkin.cadenceDays} days so nothing activates by accident. Your dead-man's-switch is dormant.`
-            : `Heads up — your check-in window has advanced. ${checkin.missedCount} of ${checkin.threshold} missed. If the threshold is reached, your executor is asked to confirm before legacy mode begins.`}
+            ? `All calm. You check in every ${checkin.cadenceDays} days. Your safety net is active and nothing will trigger without your confirmation.`
+            : `Heads up — your check-in window has advanced. ${checkin.missedCount} of ${checkin.threshold} missed. If the threshold is reached, your executor is asked to confirm before any access is granted.`}
         </p>
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between text-xs text-muted-foreground">

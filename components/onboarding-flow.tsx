@@ -18,12 +18,12 @@ const STEPS = [
     icon: Users,
     title: "Name your people",
     body: "Choose beneficiaries and guardians. Decide exactly what each person can see, and verify them over WhatsApp so only the right people ever gain access.",
-    points: ["Per-person access scopes", "WhatsApp identity verification", "An executor for the legacy handoff"],
+    points: ["Per-person access scopes", "WhatsApp identity verification", "An executor to confirm before anything is released"],
   },
   {
     icon: MessageCircle,
     title: "Set the safety net",
-    body: "Configure your check-in cadence — the dead man's switch. If you stop responding, Aegis escalates carefully through incapacity and, only if confirmed, legacy mode.",
+    body: "Configure your check-in cadence. If you stop responding, Aegis checks in with you first, then escalates carefully — reaching out to your trusted contacts only after a confirmation step.",
     points: ["Regular WhatsApp check-ins", "Guardian access if you can't act", "Confirmed handoff before anything is released"],
   },
   {

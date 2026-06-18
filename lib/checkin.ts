@@ -52,7 +52,7 @@ export const transitions = {
       prev,
       'legacy',
       'Legacy Activated',
-      'Executor Arjun Sharma confirmed. Legacy mode is live — verified family members now have compassionate, guided access.',
+      'Executor confirmed. Legacy mode is live — verified contacts now have guided access to the vault.',
     ),
 
   awaitingExecutor: (prev: TriggerState): TriggerState =>

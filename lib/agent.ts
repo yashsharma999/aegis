@@ -86,36 +86,37 @@ function everydayReply(message: string): AgentReply {
 }
 
 function legacyReply(message: string, familyName: string): AgentReply {
+  const ownerFirst = owner.name.split(' ')[0]
   const p = policies.find((x) => x.type === 'term_life')!
   if (match(message, ['insurance', 'claim', 'policy', 'money', 'lic'])) {
     return {
-      text: `Of course, ${familyName}. The most important policy to claim first is the LIC term life cover — policy number ${p.policyNumber}, sum assured ${p.coverageAmount}. You are the named nominee. Call ${p.claimContact}, share the policy number, and submit the death certificate and your ID. Ravi also left a note: claim this one first because it's the largest and fastest. I'll stay with you through each step.`,
+      text: `Sure, ${familyName}. The primary policy on file is the LIC term life cover — policy number ${p.policyNumber}, sum assured ${p.coverageAmount}. You are the named nominee. The claim contact is ${p.claimContact}. ${ownerFirst} wanted you to have this information readily available. I can walk you through each step whenever you're ready.`,
       sourceDoc: 'LIC Term Life — Jeevan Amar',
     }
   }
-  if (match(message, ['funeral', 'rites', 'last'])) {
+  if (match(message, ['funeral', 'rites', 'wishes', 'last'])) {
     const ins = instructions.find((i) => i.type === 'funeral')!
     return {
-      text: `Ravi wrote this himself, ${familyName}: "${ins.body}"`,
-      sourceDoc: 'Funeral wishes',
+      text: `${ownerFirst} wrote this down ahead of time: "${ins.body}"`,
+      sourceDoc: 'Personal wishes',
     }
   }
   if (match(message, ['fund', 'account', 'savings', 'where'])) {
     const ins = instructions.find((i) => i.type === 'financial')!
     return {
-      text: `Here's what Ravi left about finances: "${ins.body}" Take your time — there's no rush on any decision.`,
+      text: `Here's what ${ownerFirst} documented about finances: "${ins.body}" There's no pressure to act on anything quickly.`,
       sourceDoc: 'Financial instructions',
     }
   }
   if (match(message, ['message', 'say', 'note', 'me'])) {
     const ins = instructions.find((i) => i.type === 'messages')!
     return {
-      text: `He left a personal message: "${ins.body}"`,
-      sourceDoc: 'Personal messages to loved ones',
+      text: `${ownerFirst} left a personal note: "${ins.body}"`,
+      sourceDoc: 'Personal messages',
     }
   }
   return {
-    text: `I'm here for whatever you need, ${familyName}. I can walk you through the immediate steps, help you claim the insurance, show you where the funds are, or simply share the messages Ravi left for you. What would help most right now?`,
+    text: `I'm here for whatever you need, ${familyName}. I can help you access documents, walk through insurance policies, show you where important accounts are, or share notes ${ownerFirst} left for you. What would be most helpful right now?`,
   }
 }
 
