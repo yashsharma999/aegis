@@ -27,8 +27,8 @@ export default async function DashboardPage() {
   return (
     <>
       <PageHeader
-        title={`Good to see you, ${owner.name.split(' ')[0]}`}
-        description={`Everything you'd ever need to find, file, or hand over — in one calm place. You're protecting ${owner.protecting}.`}
+        title="Welcome back"
+        description="Everything you'd ever need to find, file, or hand over — in one calm place."
       />
 
       <section className="grid gap-5 lg:grid-cols-3">
