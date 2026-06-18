@@ -111,13 +111,17 @@ export function AppSidebar({ owner }: { owner: Owner }) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-3">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
+        <Link href="/dashboard" className="flex items-center gap-3 px-2 py-3">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground ring-1 ring-inset ring-sidebar-primary/40">
             <ShieldCheck className="size-5" />
           </span>
-          <span className="flex flex-col leading-tight">
-            <span className="font-serif text-lg font-semibold text-sidebar-foreground">Aegis</span>
-            <span className="text-xs text-sidebar-foreground/60">Your chief of staff for life</span>
+          <span className="flex flex-col gap-1 leading-none">
+            <span className="font-serif text-lg font-semibold tracking-tight text-sidebar-foreground">
+              Aegis
+            </span>
+            <span className="text-[0.625rem] font-medium uppercase tracking-[0.18em] text-sidebar-foreground/55">
+              Chief of staff for life
+            </span>
           </span>
         </Link>
       </SidebarHeader>

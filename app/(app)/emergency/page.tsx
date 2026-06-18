@@ -28,7 +28,7 @@ export default async function EmergencyPage() {
 
   return (
     <>
-      <div className="flex items-center gap-3 rounded-2xl border border-emergency/30 bg-emergency/10 px-4 py-3 text-emergency">
+      <div className="flex items-center gap-3 rounded-xl border border-emergency/30 bg-emergency/10 px-4 py-3 text-emergency">
         <Siren className="size-5 shrink-0" />
         <p className="text-sm font-medium">
           Emergency mode shows only what first responders and trusted contacts need — readable at a glance.
@@ -36,6 +36,7 @@ export default async function EmergencyPage() {
       </div>
 
       <PageHeader
+        eyebrow="Break-glass"
         title="Emergency mode"
         description="Break-glass medical ID and insurance details for a crisis. Accessible by you or a trusted contact."
         action={<ShareAccessButton />}

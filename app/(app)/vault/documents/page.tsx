@@ -22,6 +22,7 @@ export default async function DocumentsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="Vault · Documents"
         title="Document vault"
         description="Every record your family would need, encrypted and understood by your agent."
         action={<AddDocumentDialog />}
@@ -47,9 +48,11 @@ export default async function DocumentsPage() {
         <div className="flex flex-col gap-8">
           {categories.map((category) => (
           <section key={category} className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <h2 className="font-heading text-lg text-foreground">{CATEGORY_LABELS[category]}</h2>
-              <Badge variant="secondary">{byCategory[category].length}</Badge>
+            <div className="flex items-center gap-2.5">
+              <h2 className="font-serif text-xl font-semibold tracking-tight text-foreground">
+                {CATEGORY_LABELS[category]}
+              </h2>
+              <Badge variant="secondary" className="rounded-full">{byCategory[category].length}</Badge>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {byCategory[category].map((doc) => (

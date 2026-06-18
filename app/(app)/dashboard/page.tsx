@@ -1,9 +1,9 @@
-import { CheckCircle2, Circle } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { PageHeader } from '@/components/page-header'
 import { ReadinessRing } from '@/components/readiness-ring'
 import { StatusCard } from '@/components/status-card'
 import { QuickActions } from '@/components/quick-actions'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { db } from '@/lib/db'
 import { CATEGORY_LABELS, type DocumentCategory } from '@/lib/types'
 
@@ -26,19 +26,17 @@ export default async function DashboardPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Dashboard"
         title="Welcome back"
         description="Everything you'd ever need to find, file, or hand over — in one calm place."
       />
 
-      <section className="grid gap-5 lg:grid-cols-3">
-        <Card className="rounded-3xl lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base">Vault readiness</CardTitle>
-            <CardDescription>How prepared your vault is across every category.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex items-center justify-center pb-8">
-            <ReadinessRing value={readiness} />
-          </CardContent>
+      <section className="grid gap-4 lg:grid-cols-3">
+        <Card className="flex flex-col items-center justify-center gap-1 rounded-xl p-8 lg:col-span-1">
+          <ReadinessRing value={readiness} label="" />
+          <p className="mt-2 max-w-[16rem] text-balance text-center text-sm text-muted-foreground">
+            How prepared your vault is across every category.
+          </p>
         </Card>
 
         <div className="lg:col-span-2">
@@ -46,40 +44,48 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-serif text-xl font-semibold">Quick actions</h2>
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <span className="overline">Get started</span>
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">Quick actions</h2>
+        </div>
         <QuickActions />
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-serif text-xl font-semibold">What&apos;s still missing</h2>
-        <Card className="rounded-3xl">
-          <CardContent className="flex flex-col gap-1 py-2">
-            {allCategories.map((c) => {
-              const has = filled.has(c)
-              return (
-                <div
-                  key={c}
-                  className="flex items-center gap-3 border-b py-3 last:border-0"
+      <section className="flex flex-col gap-4">
+        <div className="flex items-end justify-between">
+          <div className="flex flex-col gap-1">
+            <span className="overline">Coverage</span>
+            <h2 className="font-serif text-2xl font-semibold tracking-tight">What&apos;s still missing</h2>
+          </div>
+          <span className="text-sm tabular-nums text-muted-foreground">
+            {filled.size} of {allCategories.length} categories
+          </span>
+        </div>
+        <Card className="rounded-xl px-6 py-2">
+          {allCategories.map((c) => {
+            const has = filled.has(c)
+            return (
+              <div key={c} className="flex items-center gap-4 border-b border-border py-4 last:border-0">
+                <span
+                  className={
+                    has
+                      ? 'flex size-6 items-center justify-center rounded-full bg-success/15 text-success'
+                      : 'flex size-6 items-center justify-center rounded-full border border-dashed border-border'
+                  }
                 >
-                  {has ? (
-                    <CheckCircle2 className="size-5 text-success" />
-                  ) : (
-                    <Circle className="size-5 text-muted-foreground/40" />
-                  )}
-                  <span className={has ? 'font-medium' : 'text-muted-foreground'}>
-                    {CATEGORY_LABELS[c]}
-                  </span>
-                  <span className="ml-auto text-sm text-muted-foreground">
-                    {has ? 'Covered' : 'Nothing added yet'}
-                  </span>
-                </div>
-              )
-            })}
-            {missing.length === 0 ? (
-              <p className="py-3 text-sm text-success">Every category has at least one item. Beautifully prepared.</p>
-            ) : null}
-          </CardContent>
+                  {has ? <Check className="size-3.5" strokeWidth={2.5} /> : null}
+                </span>
+                <span className={has ? 'font-medium' : 'text-muted-foreground'}>{CATEGORY_LABELS[c]}</span>
+                <span className="ml-auto text-sm text-muted-foreground">
+                  {has ? 'Covered' : 'Nothing added yet'}
+                </span>
+              </div>
+            )
+          })}
+          {missing.length === 0 ? (
+            <p className="py-4 text-sm text-success">Every category has at least one item. Beautifully prepared.</p>
+          ) : null}
         </Card>
       </section>
     </>

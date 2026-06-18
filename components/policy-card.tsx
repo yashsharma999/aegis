@@ -10,30 +10,28 @@ function formatDate(iso: string) {
 
 export function PolicyCard({ policy }: { policy: Policy }) {
   return (
-    <Card className="overflow-hidden rounded-2xl">
+    <Card className="overflow-hidden rounded-xl transition-all duration-200 hover:border-foreground/20 hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.18)]">
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <Badge variant="secondary" className="w-fit">
-              {POLICY_LABELS[policy.type]}
-            </Badge>
-            <CardTitle className="font-heading text-lg">{policy.provider}</CardTitle>
+          <div className="flex flex-col gap-1.5">
+            <span className="overline">{POLICY_LABELS[policy.type]}</span>
+            <CardTitle className="font-serif text-xl tracking-tight">{policy.provider}</CardTitle>
             <CardDescription className="font-mono text-xs">{policy.policyNumber}</CardDescription>
           </div>
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <ShieldCheck className="size-5" />
+          <span className="flex size-10 items-center justify-center rounded-full border border-border text-primary">
+            <ShieldCheck className="size-5" strokeWidth={1.75} />
           </span>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-muted-foreground">Coverage</span>
-            <span className="font-heading text-lg text-foreground">{policy.coverageAmount}</span>
+        <div className="grid grid-cols-2 gap-4 border-y border-border py-4">
+          <div className="flex flex-col gap-1">
+            <span className="overline">Coverage</span>
+            <span className="font-serif text-xl tracking-tight text-foreground">{policy.coverageAmount}</span>
           </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-muted-foreground">Premium</span>
-            <span className="font-heading text-lg text-foreground">{policy.premium}</span>
+          <div className="flex flex-col gap-1">
+            <span className="overline">Premium</span>
+            <span className="font-serif text-xl tracking-tight text-foreground">{policy.premium}</span>
           </div>
         </div>
 
@@ -43,11 +41,11 @@ export function PolicyCard({ policy }: { policy: Policy }) {
         </div>
 
         {policy.networkHospitals?.length ? (
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-foreground">Network hospitals</span>
+          <div className="flex flex-col gap-2">
+            <span className="overline">Network hospitals</span>
             <div className="flex flex-wrap gap-1.5">
               {policy.networkHospitals.map((h) => (
-                <Badge key={h} variant="outline" className="font-normal">
+                <Badge key={h} variant="outline" className="rounded-full font-normal">
                   {h}
                 </Badge>
               ))}
@@ -56,8 +54,8 @@ export function PolicyCard({ policy }: { policy: Policy }) {
         ) : null}
 
         {policy.claimSteps?.length ? (
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-foreground">How to claim</span>
+          <div className="flex flex-col gap-2">
+            <span className="overline">How to claim</span>
             <ol className="flex flex-col gap-1 text-sm text-muted-foreground">
               {policy.claimSteps.map((step, i) => (
                 <li key={i} className="flex gap-2">

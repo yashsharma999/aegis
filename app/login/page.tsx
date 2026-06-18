@@ -61,44 +61,61 @@ export default function LoginPage() {
     <main className="grid min-h-svh lg:grid-cols-2">
       {/* Brand panel */}
       <section className="relative hidden flex-col justify-between bg-primary p-12 text-primary-foreground lg:flex">
-        <div className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary-foreground/10">
+        <div className="flex items-center gap-3">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-primary-foreground/10 ring-1 ring-inset ring-primary-foreground/15">
             <ShieldCheck className="size-5" />
           </span>
-          <span className="font-heading text-xl font-medium">Aegis</span>
+          <span className="flex flex-col gap-1 leading-none">
+            <span className="font-serif text-xl font-semibold tracking-tight">Aegis</span>
+            <span className="text-[0.625rem] font-medium uppercase tracking-[0.18em] text-primary-foreground/55">
+              Chief of staff for life
+            </span>
+          </span>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <h1 className="max-w-md font-heading text-4xl leading-[1.1] text-balance">
-            Everything you&apos;d ever need to find, file, or hand over — in one calm place.
+        <div className="flex flex-col gap-8">
+          <h1 className="max-w-md font-serif text-[2.75rem] font-semibold leading-[1.08] tracking-[-0.02em] text-balance">
+            Everything you&apos;d ever need to find, file, or hand over —{" "}
+            <span className="italic font-normal text-accent">in one calm place.</span>
           </h1>
-          <p className="max-w-sm leading-relaxed text-primary-foreground/70">
+          <p className="max-w-sm text-pretty leading-relaxed text-primary-foreground/70">
             Your documents, policies, and wishes, safeguarded by an agent that knows exactly what to reveal, and when.
           </p>
-          <div className="flex flex-wrap gap-2 pt-2">
-            {MODE_HINTS.map((m) => (
-              <span
+          <div className="flex flex-col">
+            <span className="mb-3 text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-primary-foreground/45">
+              One vault, every season of life
+            </span>
+            {MODE_HINTS.map((m, i) => (
+              <div
                 key={m.label}
-                className="flex items-center gap-1.5 rounded-full bg-primary-foreground/5 px-3 py-1.5 text-sm text-primary-foreground/80 ring-1 ring-primary-foreground/10"
+                className="flex items-center gap-3 border-t border-primary-foreground/10 py-3 last:border-b"
               >
-                <m.icon className="size-3.5" />
-                {m.label}
-              </span>
+                <span className="font-mono text-xs tabular-nums text-primary-foreground/40">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <m.icon className="size-4 text-accent" strokeWidth={1.75} />
+                <span className="text-sm text-primary-foreground/85">{m.label}</span>
+              </div>
             ))}
           </div>
         </div>
 
-        <p className="text-sm text-primary-foreground/50">A demo experience. No real data is stored.</p>
+        <p className="text-xs uppercase tracking-[0.15em] text-primary-foreground/40">
+          A demo experience · No real data is stored
+        </p>
       </section>
 
       {/* Form panel */}
       <section className="flex items-center justify-center bg-background px-6 py-12">
         <div className="w-full max-w-sm">
-          <div className="mb-8 flex flex-col gap-2">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground lg:hidden">
+          <div className="mb-8 flex flex-col gap-2.5">
+            <span className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-inset ring-primary/40 lg:hidden">
               <ShieldCheck className="size-5" />
             </span>
-            <h2 className="font-heading text-3xl text-foreground">Welcome back</h2>
+            <span className="overline">Sign in</span>
+            <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-foreground">
+              Welcome back
+            </h2>
             <p className="leading-relaxed text-muted-foreground">Sign in to open your vault.</p>
           </div>
 
@@ -155,7 +172,7 @@ export default function LoginPage() {
             </FieldGroup>
           </form>
 
-          <div className="mt-6 rounded-2xl border border-dashed bg-secondary/40 p-4">
+          <div className="mt-6 rounded-xl border border-dashed bg-secondary/40 p-4">
             <p className="text-sm font-medium text-foreground">Want to see it filled with sample data?</p>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
               Use the demo account:

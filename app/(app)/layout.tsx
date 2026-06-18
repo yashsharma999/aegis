@@ -17,16 +17,19 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <AppSidebar owner={owner} />
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border/70 bg-background/75 px-4 backdrop-blur-md">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-5" />
-          <span className="font-serif text-sm font-medium">Aegis</span>
-          <div className="ml-auto flex items-center gap-1.5">
+          <span className="font-serif text-base font-semibold tracking-tight">Aegis</span>
+          <span className="hidden text-xs text-muted-foreground sm:inline">
+            Chief of staff for life
+          </span>
+          <div className="ml-auto flex items-center gap-2">
             <ModeIndicator mode={mode} />
             <NotificationsBell reminders={reminders} />
           </div>
         </header>
-        <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
+        <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
           {children}
         </main>
       </SidebarInset>

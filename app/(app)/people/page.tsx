@@ -24,6 +24,7 @@ export default async function PeoplePage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="People"
         title="People & access"
         description="Who can reach your vault, how they prove it's them, and exactly what they can see."
       />
@@ -44,10 +45,13 @@ export default async function PeoplePage() {
       ) : (
         <>
       <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-lg text-foreground">Beneficiaries</h2>
+        <div className="flex flex-col gap-1">
+          <span className="overline">Inner circle</span>
+          <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Beneficiaries</h2>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           {beneficiaries.map((b) => (
-            <Card key={b.id} className="rounded-2xl">
+            <Card key={b.id} className="rounded-xl transition-colors hover:border-foreground/20">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <Avatar className="size-11">
@@ -76,8 +80,8 @@ export default async function PeoplePage() {
                   <span className="font-mono">{b.whatsapp}</span>
                 </div>
                 <Separator />
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs font-medium text-foreground">Can access in Legacy mode</span>
+                <div className="flex flex-col gap-2">
+                  <span className="overline">Can access in Legacy mode</span>
                   <div className="flex flex-wrap gap-1.5">
                     {b.accessScope.map((scope) => (
                       <Badge key={scope} variant="secondary" className="font-normal">
@@ -93,13 +97,16 @@ export default async function PeoplePage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-lg text-foreground">Guardians & executor</h2>
+        <div className="flex flex-col gap-1">
+          <span className="overline">Oversight</span>
+          <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Guardians &amp; executor</h2>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           {guardians.map((g) => (
-            <Card key={g.id} className="rounded-2xl">
+            <Card key={g.id} className="rounded-xl transition-colors hover:border-foreground/20">
               <CardContent className="flex items-center gap-3 py-1">
-                <span className="flex size-11 items-center justify-center rounded-xl bg-accent/30 text-accent-foreground">
-                  <ShieldUser className="size-5" />
+                <span className="flex size-11 items-center justify-center rounded-full border border-accent/50 bg-accent/15 text-accent-foreground">
+                  <ShieldUser className="size-5" strokeWidth={1.75} />
                 </span>
                 <div className="flex flex-1 flex-col gap-0.5">
                   <span className="font-medium">{g.name}</span>

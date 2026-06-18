@@ -25,6 +25,7 @@ export default async function CheckinSettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="Settings"
         title="Check-in & safety net"
         description="The dead man's switch. Regular check-ins keep your vault dormant; silence escalates access carefully."
       />

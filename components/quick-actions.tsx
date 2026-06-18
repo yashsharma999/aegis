@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircleHeart, FilePlus2, Siren, BellRing } from 'lucide-react'
+import { MessageCircleHeart, FilePlus2, Siren, BellRing, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const actions = [
@@ -8,28 +8,29 @@ const actions = [
     description: 'Find anything in your vault',
     href: '/assistant',
     icon: MessageCircleHeart,
-    tone: 'hover:border-primary/40',
+    accent: false,
   },
   {
     title: 'Add a document',
     description: 'Upload and tag a file',
     href: '/vault/documents',
     icon: FilePlus2,
-    tone: 'hover:border-accent/60',
+    accent: true,
   },
   {
     title: 'Renewal radar',
     description: 'See what needs attention',
     href: '/reminders',
     icon: BellRing,
-    tone: 'hover:border-primary/40',
+    accent: false,
   },
   {
     title: 'Emergency mode',
     description: 'Break-glass medical ID',
     href: '/emergency',
     icon: Siren,
-    tone: 'hover:border-emergency/50',
+    accent: false,
+    danger: true,
   },
 ]
 
@@ -43,17 +44,28 @@ export function QuickActions() {
             key={a.href}
             href={a.href}
             className={cn(
-              'group flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-sm transition-colors',
-              a.tone,
+              'group relative flex flex-col gap-6 rounded-xl border bg-card p-5 transition-all duration-200',
+              'hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.18)]',
+              a.danger && 'hover:border-emergency/50',
             )}
           >
-            <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
-              <Icon className="size-5" />
+            <span
+              className={cn(
+                'flex size-10 items-center justify-center rounded-full border transition-colors',
+                a.accent
+                  ? 'border-accent/50 bg-accent/15 text-accent-foreground'
+                  : a.danger
+                    ? 'border-emergency/30 text-emergency'
+                    : 'border-border text-foreground/70 group-hover:border-foreground/30',
+              )}
+            >
+              <Icon className="size-5" strokeWidth={1.75} />
             </span>
-            <span className="flex flex-col">
-              <span className="font-medium">{a.title}</span>
-              <span className="text-sm text-muted-foreground">{a.description}</span>
+            <span className="flex flex-col gap-1">
+              <span className="font-medium leading-tight">{a.title}</span>
+              <span className="text-sm leading-snug text-muted-foreground">{a.description}</span>
             </span>
+            <ArrowUpRight className="absolute right-4 top-4 size-4 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground/70" />
           </Link>
         )
       })}

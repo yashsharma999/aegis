@@ -28,10 +28,11 @@ export default async function AssistantPage() {
   return (
     <>
       <PageHeader
+        eyebrow="Assistant"
         title="Ask the agent"
         description="Your everyday assistant for life admin. It pulls real answers from your vault and always shows its source."
       />
-      <Card className="flex h-[calc(100vh-15rem)] min-h-[520px] flex-col overflow-hidden rounded-3xl p-0">
+      <Card className="flex h-[calc(100vh-16rem)] min-h-[520px] flex-col overflow-hidden rounded-xl p-0">
         <AgentChat
           mode="everyday"
           initialMessages={initialMessages}

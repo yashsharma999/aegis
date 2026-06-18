@@ -31,10 +31,10 @@ function ReminderRow({ reminder }: { reminder: Reminder }) {
   const Icon = KIND_ICON[reminder.kind]
   const status = STATUS[reminder.status]
   return (
-    <Card className="rounded-2xl">
+    <Card className="rounded-xl transition-colors hover:border-foreground/20">
       <CardContent className="flex items-center gap-4 py-1">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
-          <Icon className="size-5" />
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border text-foreground/70">
+          <Icon className="size-5" strokeWidth={1.75} />
         </span>
         <div className="flex flex-1 flex-col gap-0.5">
           <span className="font-medium leading-snug text-balance">{reminder.title}</span>
@@ -58,6 +58,7 @@ export default async function RemindersPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="Everyday"
         title="Renewal radar"
         description="Your agent watches every expiry date and nudges you on WhatsApp before anything lapses."
       />

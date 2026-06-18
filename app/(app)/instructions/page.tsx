@@ -20,6 +20,7 @@ export default async function InstructionsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="Vault · Legacy"
         title="Instructions & wishes"
         description="Your words, ready to guide your family through the first hours and the hardest decisions."
       />
@@ -41,13 +42,13 @@ export default async function InstructionsPage() {
           {instructions.map((ins) => {
             const Icon = ICONS[ins.type]
             return (
-            <Card key={ins.id} className="rounded-2xl">
+            <Card key={ins.id} className="rounded-xl transition-colors hover:border-foreground/20">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-xl bg-accent/30 text-accent-foreground">
-                    <Icon className="size-5" />
+                  <span className="flex size-10 items-center justify-center rounded-full border border-accent/50 bg-accent/15 text-accent-foreground">
+                    <Icon className="size-5" strokeWidth={1.75} />
                   </span>
-                  <CardTitle className="font-heading text-lg">{ins.title}</CardTitle>
+                  <CardTitle className="font-serif text-xl tracking-tight">{ins.title}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>

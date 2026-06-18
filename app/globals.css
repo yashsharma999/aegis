@@ -56,30 +56,30 @@
 
 :root {
   color-scheme: light;
-  --background: oklch(0.985 0.006 85);
-  --foreground: oklch(0.27 0.03 255);
-  --card: oklch(0.998 0.004 90);
-  --card-foreground: oklch(0.27 0.03 255);
-  --popover: oklch(0.998 0.004 90);
-  --popover-foreground: oklch(0.27 0.03 255);
-  --primary: oklch(0.31 0.04 255);
+  --background: oklch(0.973 0.009 83);
+  --foreground: oklch(0.25 0.03 258);
+  --card: oklch(0.995 0.005 88);
+  --card-foreground: oklch(0.25 0.03 258);
+  --popover: oklch(0.995 0.005 88);
+  --popover-foreground: oklch(0.25 0.03 258);
+  --primary: oklch(0.3 0.042 258);
   --primary-foreground: oklch(0.98 0.006 85);
-  --secondary: oklch(0.95 0.008 85);
-  --secondary-foreground: oklch(0.31 0.04 255);
-  --muted: oklch(0.955 0.007 85);
-  --muted-foreground: oklch(0.52 0.02 255);
-  --accent: oklch(0.82 0.09 75);
-  --accent-foreground: oklch(0.29 0.04 70);
+  --secondary: oklch(0.945 0.01 83);
+  --secondary-foreground: oklch(0.3 0.042 258);
+  --muted: oklch(0.95 0.009 83);
+  --muted-foreground: oklch(0.5 0.022 258);
+  --accent: oklch(0.78 0.105 68);
+  --accent-foreground: oklch(0.27 0.045 65);
   --destructive: oklch(0.55 0.2 25);
-  --border: oklch(0.9 0.01 85);
-  --input: oklch(0.9 0.01 85);
+  --border: oklch(0.882 0.013 80);
+  --input: oklch(0.882 0.013 80);
   --ring: oklch(0.55 0.05 255);
   --chart-1: oklch(0.55 0.06 255);
   --chart-2: oklch(0.78 0.1 75);
   --chart-3: oklch(0.6 0.07 160);
   --chart-4: oklch(0.45 0.05 255);
   --chart-5: oklch(0.7 0.08 40);
-  --radius: 1rem;
+  --radius: 0.625rem;
   --emergency: oklch(0.55 0.19 22);
   --emergency-foreground: oklch(0.98 0.01 22);
   --emergency-muted: oklch(0.95 0.03 22);
@@ -173,8 +173,50 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Barely-there paper grain — the signature texture of the vault. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   }
   html {
     @apply font-sans;
+  }
+  /* Fraunces optical sizing + tighter editorial display rhythm. */
+  .font-serif {
+    font-optical-sizing: auto;
+    font-feature-settings: 'ss01', 'liga', 'calt';
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Letterspaced ledger label — the archival "filed under" voice. */
+  .overline {
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted-foreground);
+  }
+  /* A hairline rule with a single accent tick — used as section seals. */
+  .rule-seal {
+    position: relative;
+    height: 1px;
+    background: var(--border);
+  }
+  .rule-seal::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 1px;
+    width: 2.5rem;
+    background: var(--accent);
   }
 }

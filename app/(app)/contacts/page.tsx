@@ -12,6 +12,7 @@ export default async function ContactsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        eyebrow="Directory"
         title="Key contacts"
         description="The people your family should call first, with context for why each one matters."
       />
@@ -31,11 +32,11 @@ export default async function ContactsPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {contacts.map((c) => (
-          <Card key={c.id} className="rounded-2xl">
-            <CardContent className="flex flex-col gap-2 py-1">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-medium">{c.name}</span>
-                <span className="text-xs text-muted-foreground">{c.role}</span>
+          <Card key={c.id} className="rounded-xl transition-all duration-200 hover:border-foreground/20 hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.18)]">
+            <CardContent className="flex flex-col gap-2.5 py-1">
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-serif text-lg font-semibold tracking-tight">{c.name}</span>
+                <span className="overline mt-1.5">{c.role}</span>
               </div>
               <a
                 href={`tel:${c.phone.replace(/\s/g, "")}`}
