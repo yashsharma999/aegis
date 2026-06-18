@@ -18,15 +18,10 @@ export function StatusCard({ mode, checkin }: { mode: AppMode; checkin: CheckinC
     <Card className="flex h-full flex-col justify-between rounded-xl p-6">
       <CardContent className="flex flex-col gap-5 p-0">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <span className="overline flex items-center gap-1.5">
-              <HeartPulse className="size-3.5 text-accent-foreground" strokeWidth={2} />
-              Life-status switch
-            </span>
-            <h3 className="font-serif text-2xl font-semibold tracking-tight">
-              {healthy ? 'Your safety net is active' : 'Check-in window advanced'}
-            </h3>
-          </div>
+          <h3 className="flex items-center gap-2 font-serif text-2xl font-semibold tracking-tight">
+            <HeartPulse className="size-5 text-accent-foreground" strokeWidth={1.75} />
+            {healthy ? 'Your safety net is active' : 'Check-in window advanced'}
+          </h3>
           <Badge
             variant="outline"
             className={
@@ -47,7 +42,7 @@ export function StatusCard({ mode, checkin }: { mode: AppMode; checkin: CheckinC
 
         <div className="flex flex-col gap-2 border-t border-border pt-4">
           <div className="flex justify-between text-xs">
-            <span className="overline">Check-in buffer</span>
+            <span className="text-muted-foreground">Check-in buffer</span>
             <span className="font-medium tabular-nums text-foreground">
               {checkin.threshold - checkin.missedCount} of {checkin.threshold} remaining
             </span>

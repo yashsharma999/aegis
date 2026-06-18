@@ -36,7 +36,6 @@ export default async function EmergencyPage() {
       </div>
 
       <PageHeader
-        eyebrow="Break-glass"
         title="Emergency mode"
         description="Break-glass medical ID and insurance details for a crisis. Accessible by you or a trusted contact."
         action={<ShareAccessButton />}

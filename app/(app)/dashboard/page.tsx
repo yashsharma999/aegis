@@ -26,7 +26,6 @@ export default async function DashboardPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Dashboard"
         title="Welcome back"
         description="Everything you'd ever need to find, file, or hand over — in one calm place."
       />
@@ -45,19 +44,13 @@ export default async function DashboardPage() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <span className="overline">Get started</span>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">Quick actions</h2>
-        </div>
+        <h2 className="font-serif text-2xl font-semibold tracking-tight">Quick actions</h2>
         <QuickActions />
       </section>
 
       <section className="flex flex-col gap-4">
         <div className="flex items-end justify-between">
-          <div className="flex flex-col gap-1">
-            <span className="overline">Coverage</span>
-            <h2 className="font-serif text-2xl font-semibold tracking-tight">What&apos;s still missing</h2>
-          </div>
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">What&apos;s still missing</h2>
           <span className="text-sm tabular-nums text-muted-foreground">
             {filled.size} of {allCategories.length} categories
           </span>

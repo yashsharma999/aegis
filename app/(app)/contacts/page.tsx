@@ -12,7 +12,6 @@ export default async function ContactsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="Directory"
         title="Key contacts"
         description="The people your family should call first, with context for why each one matters."
       />

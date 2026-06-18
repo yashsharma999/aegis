@@ -28,7 +28,6 @@ export default async function AssistantPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Assistant"
         title="Ask the agent"
         description="Your everyday assistant for life admin. It pulls real answers from your vault and always shows its source."
       />

@@ -22,7 +22,6 @@ export default async function DocumentsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="Vault · Documents"
         title="Document vault"
         description="Every record your family would need, encrypted and understood by your agent."
         action={<AddDocumentDialog />}

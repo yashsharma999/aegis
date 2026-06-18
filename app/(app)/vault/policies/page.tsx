@@ -12,7 +12,6 @@ export default async function PoliciesPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="Vault · Insurance"
         title="Insurance policies"
         description="Coverage, premiums, and claim steps your family can act on without hunting for paperwork."
       />

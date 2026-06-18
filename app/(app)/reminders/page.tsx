@@ -58,7 +58,6 @@ export default async function RemindersPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="Everyday"
         title="Renewal radar"
         description="Your agent watches every expiry date and nudges you on WhatsApp before anything lapses."
       />

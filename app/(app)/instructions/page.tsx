@@ -20,7 +20,6 @@ export default async function InstructionsPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="Vault · Legacy"
         title="Instructions & wishes"
         description="Your words, ready to guide your family through the first hours and the hardest decisions."
       />

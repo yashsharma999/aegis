@@ -24,7 +24,6 @@ export default async function PeoplePage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        eyebrow="People"
         title="People & access"
         description="Who can reach your vault, how they prove it's them, and exactly what they can see."
       />
@@ -45,10 +44,7 @@ export default async function PeoplePage() {
       ) : (
         <>
       <section className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <span className="overline">Inner circle</span>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Beneficiaries</h2>
-        </div>
+        <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Beneficiaries</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {beneficiaries.map((b) => (
             <Card key={b.id} className="rounded-xl transition-colors hover:border-foreground/20">
@@ -81,7 +77,7 @@ export default async function PeoplePage() {
                 </div>
                 <Separator />
                 <div className="flex flex-col gap-2">
-                  <span className="overline">Can access in Legacy mode</span>
+                  <span className="text-xs text-muted-foreground">Can access in Legacy mode</span>
                   <div className="flex flex-wrap gap-1.5">
                     {b.accessScope.map((scope) => (
                       <Badge key={scope} variant="secondary" className="font-normal">
@@ -97,10 +93,7 @@ export default async function PeoplePage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <span className="overline">Oversight</span>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Guardians &amp; executor</h2>
-        </div>
+        <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Guardians &amp; executor</h2>
         <div className="grid gap-4 md:grid-cols-2">
           {guardians.map((g) => (
             <Card key={g.id} className="rounded-xl transition-colors hover:border-foreground/20">

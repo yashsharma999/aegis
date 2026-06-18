@@ -112,7 +112,6 @@ export default function LoginPage() {
             <span className="mb-2 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-inset ring-primary/40 lg:hidden">
               <ShieldCheck className="size-5" />
             </span>
-            <span className="overline">Sign in</span>
             <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] text-foreground">
               Welcome back
             </h2>

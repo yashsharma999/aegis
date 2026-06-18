@@ -11,7 +11,6 @@ export default async function TriggerPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Demo"
         title="Demo controls"
         description="Drive the mode/state machine: Everyday → Emergency → Incapacity → Pre-triggered → Awaiting Executor → Legacy Activated. Every transition is logged."
         action={
