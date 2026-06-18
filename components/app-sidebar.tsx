@@ -51,12 +51,12 @@ const emergency: NavItem[] = [
 const vault: NavItem[] = [
   { title: 'Documents', href: '/vault/documents', icon: FileText },
   { title: 'Insurance', href: '/vault/policies', icon: ShieldQuestion },
-  { title: 'Wishes & instructions', href: '/vault/instructions', icon: ScrollText },
-  { title: 'Key contacts', href: '/vault/contacts', icon: Phone },
+  { title: 'Wishes & instructions', href: '/instructions', icon: ScrollText },
+  { title: 'Key contacts', href: '/contacts', icon: Phone },
 ]
 
 const people: NavItem[] = [
-  { title: 'People & access', href: '/vault/people', icon: Users },
+  { title: 'People & access', href: '/people', icon: Users },
 ]
 
 const settings: NavItem[] = [
