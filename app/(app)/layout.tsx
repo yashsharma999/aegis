@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { ModeIndicator } from '@/components/mode-indicator'
 import { NotificationsBell } from '@/components/notifications-bell'
+import { PageTransition } from '@/components/page-transition'
 import { db } from '@/lib/db'
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -29,8 +30,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <NotificationsBell reminders={reminders} />
           </div>
         </header>
-        <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
-          {children}
+        <main className="mx-auto flex w-full max-w-6xl flex-col px-4 py-10 sm:px-6 lg:px-10">
+          <PageTransition>{children}</PageTransition>
         </main>
       </SidebarInset>
     </SidebarProvider>
