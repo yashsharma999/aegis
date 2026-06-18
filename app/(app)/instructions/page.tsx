@@ -1,8 +1,9 @@
-import { Sunrise, Flower2, MessageSquareHeart, Landmark } from "lucide-react"
+import { Sunrise, Flower2, MessageSquareHeart, Landmark, ScrollText } from "lucide-react"
 import { db } from "@/lib/db"
 import type { InstructionType } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 
 export const metadata = { title: "Instructions · Aegis" }
 
@@ -22,10 +23,24 @@ export default async function InstructionsPage() {
         title="Instructions & wishes"
         description="Your words, ready to guide your family through the first hours and the hardest decisions."
       />
-      <div className="grid gap-4 lg:grid-cols-2">
-        {instructions.map((ins) => {
-          const Icon = ICONS[ins.type]
-          return (
+      {instructions.length === 0 ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ScrollText />
+            </EmptyMedia>
+            <EmptyTitle>No instructions written yet</EmptyTitle>
+            <EmptyDescription>
+              Leave guidance for the first 24 hours, your wishes, financial notes and personal messages. These are the
+              words your family will lean on most.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {instructions.map((ins) => {
+            const Icon = ICONS[ins.type]
+            return (
             <Card key={ins.id} className="rounded-2xl">
               <CardHeader>
                 <div className="flex items-center gap-3">
@@ -38,10 +53,11 @@ export default async function InstructionsPage() {
               <CardContent>
                 <p className="leading-relaxed text-muted-foreground whitespace-pre-line">{ins.body}</p>
               </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+              </Card>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

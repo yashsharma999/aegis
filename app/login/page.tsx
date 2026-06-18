@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Field, FieldGroup, FieldLabel, FieldError, FieldDescription } from "@/components/ui/field"
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from "@/components/ui/input-group"
+import { signIn } from "@/lib/auth"
+import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/constants"
 
 const MODE_HINTS = [
   { icon: Sun, label: "Everyday" },
@@ -39,12 +41,20 @@ export default function LoginPage() {
     return Object.keys(next).length === 0
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!validate()) return
     setSubmitting(true)
-    // UI-only: no backend yet. Briefly show pending, then enter the vault.
-    setTimeout(() => router.push("/dashboard"), 500)
+    // UI-only: no password check. The email decides demo vs empty vault.
+    await signIn(email.trim())
+    router.push("/dashboard")
+    router.refresh()
+  }
+
+  function fillDemo() {
+    setEmail(DEMO_EMAIL)
+    setPassword(DEMO_PASSWORD)
+    setErrors({})
   }
 
   return (
@@ -140,10 +150,24 @@ export default function LoginPage() {
               </Button>
 
               <FieldDescription className="text-center">
-                Don&apos;t have an account? Use any email and password to explore the demo.
+                Sign in with any email to start a fresh, empty vault.
               </FieldDescription>
             </FieldGroup>
           </form>
+
+          <div className="mt-6 rounded-2xl border border-dashed bg-secondary/40 p-4">
+            <p className="text-sm font-medium text-foreground">Want to see it filled with sample data?</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              Use the demo account:
+              <br />
+              <span className="font-mono text-foreground">{DEMO_EMAIL}</span>
+              {" / "}
+              <span className="font-mono text-foreground">{DEMO_PASSWORD}</span>
+            </p>
+            <Button type="button" variant="outline" size="sm" className="mt-3" onClick={fillDemo}>
+              Use demo account
+            </Button>
+          </div>
         </div>
       </section>
     </main>

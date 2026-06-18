@@ -16,6 +16,7 @@ import {
   Timer,
   SlidersHorizontal,
   HeartHandshake,
+  LogOut,
 } from 'lucide-react'
 
 import {
@@ -31,7 +32,9 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { owner } from '@/lib/mock-data'
+import { Button } from '@/components/ui/button'
+import { signOut } from '@/lib/auth'
+import type { Owner } from '@/lib/types'
 
 type NavItem = { title: string; href: string; icon: React.ElementType }
 
@@ -95,12 +98,15 @@ function NavSection({ label, items, pathname }: { label: string; items: NavItem[
   )
 }
 
-export function AppSidebar() {
+export function AppSidebar({ owner }: { owner: Owner }) {
   const pathname = usePathname()
-  const initials = owner.name
-    .split(' ')
+  const displayName = owner.name || owner.email.split('@')[0] || 'You'
+  const initials = displayName
+    .split(/[\s._-]+/)
     .map((n) => n[0])
+    .slice(0, 2)
     .join('')
+    .toUpperCase()
 
   return (
     <Sidebar>
@@ -130,10 +136,21 @@ export function AppSidebar() {
               {initials}
             </AvatarFallback>
           </Avatar>
-          <div className="flex min-w-0 flex-col leading-tight">
-            <span className="truncate text-sm font-medium text-sidebar-foreground">{owner.name}</span>
+          <div className="flex min-w-0 flex-1 flex-col leading-tight">
+            <span className="truncate text-sm font-medium text-sidebar-foreground">{displayName}</span>
             <span className="truncate text-xs text-sidebar-foreground/60">{owner.email}</span>
           </div>
+          <form action={signOut}>
+            <Button
+              type="submit"
+              variant="ghost"
+              size="icon"
+              className="size-8 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+              aria-label="Sign out"
+            >
+              <LogOut className="size-4" />
+            </Button>
+          </form>
         </div>
       </SidebarFooter>
     </Sidebar>

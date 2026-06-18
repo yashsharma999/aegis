@@ -13,6 +13,7 @@ import {
   owner,
   policies,
 } from './mock-data'
+import { isDemoUser } from './session'
 import type { AppMode } from './types'
 
 export interface AgentReply {
@@ -134,6 +135,14 @@ export async function askAgent(
 ): Promise<AgentReply> {
   // Simulate a little thinking latency.
   await new Promise((r) => setTimeout(r, 450))
+
+  // An empty vault has nothing to retrieve from. The legacy preview is a demo
+  // surface and always shows sample data.
+  if (context.mode !== 'legacy' && !(await isDemoUser())) {
+    return {
+      text: "Your vault is empty right now, so there's nothing for me to pull from yet. Add your documents, insurance policies, medical details and wishes, and I'll be able to answer questions and point you straight to the source.",
+    }
+  }
 
   switch (context.mode) {
     case 'legacy':

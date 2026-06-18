@@ -1,8 +1,9 @@
-import { Phone, Siren, UserRound } from 'lucide-react'
+import { Phone, Siren, UserRound, ShieldPlus } from 'lucide-react'
 import { PageHeader } from '@/components/page-header'
 import { MedicalIdCard } from '@/components/medical-id-card'
 import { ShareAccessButton } from '@/components/share-access-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { db } from '@/lib/db'
 
 export default async function EmergencyPage() {
@@ -12,7 +13,8 @@ export default async function EmergencyPage() {
     db.getContacts(),
     db.getBeneficiaries(),
   ])
-  const healthPolicy = policies.find((p) => p.id === profile.activeHealthPolicyId)!
+  const hasMedicalId = profile.bloodGroup !== ''
+  const healthPolicy = policies.find((p) => p.id === profile.activeHealthPolicyId)
   const primary = beneficiaries.find((b) => b.relationship === 'Wife')
 
   const emergencyContacts = [
@@ -39,6 +41,20 @@ export default async function EmergencyPage() {
         action={<ShareAccessButton />}
       />
 
+      {!hasMedicalId || !healthPolicy ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ShieldPlus />
+            </EmptyMedia>
+            <EmptyTitle>No medical ID yet</EmptyTitle>
+            <EmptyDescription>
+              Add your blood group, allergies, medications and active health cover. In a crisis, this break-glass card is
+              what first responders and your trusted contacts will reach for.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
       <div className="grid gap-5 lg:grid-cols-5">
         <div className="lg:col-span-3">
           <MedicalIdCard profile={profile} healthPolicy={healthPolicy} />
@@ -82,6 +98,7 @@ export default async function EmergencyPage() {
           </Card>
         </div>
       </div>
+      )}
     </>
   )
 }

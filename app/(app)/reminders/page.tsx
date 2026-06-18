@@ -1,9 +1,10 @@
-import { RefreshCw, CalendarX, BadgeDollarSign } from "lucide-react"
+import { RefreshCw, CalendarX, BadgeDollarSign, BellRing } from "lucide-react"
 import { db } from "@/lib/db"
 import type { Reminder, ReminderKind, ReminderStatus } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 
 export const metadata = { title: "Reminders · Aegis" }
 
@@ -60,11 +61,26 @@ export default async function RemindersPage() {
         title="Renewal radar"
         description="Your agent watches every expiry date and nudges you on WhatsApp before anything lapses."
       />
-      <div className="flex flex-col gap-3">
-        {reminders.map((r) => (
-          <ReminderRow key={r.id} reminder={r} />
-        ))}
-      </div>
+      {reminders.length === 0 ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BellRing />
+            </EmptyMedia>
+            <EmptyTitle>Nothing on the radar</EmptyTitle>
+            <EmptyDescription>
+              As you add policies and documents with expiry dates, renewals and premiums will appear here — and Aegis
+              will nudge you before anything lapses.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {reminders.map((r) => (
+            <ReminderRow key={r.id} reminder={r} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

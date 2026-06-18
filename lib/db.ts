@@ -5,6 +5,9 @@
 //
 // For the demo this is a simple module-level store. Trigger/check-in state is mutated
 // in place so the mode/state-machine survives navigation within a running server.
+//
+// Personal data is only returned for the demo account. Every other signed-in
+// user gets an empty vault so the empty states are visible.
 
 import {
   beneficiaries,
@@ -18,7 +21,8 @@ import {
   owner,
   policies,
 } from './mock-data'
-import type { CheckinConfig, TriggerState } from './types'
+import { isDemoUser, getSessionEmail } from './session'
+import type { CheckinConfig, MedicalProfile, Owner, TriggerState } from './types'
 
 interface Store {
   triggerState: TriggerState
@@ -31,22 +35,39 @@ const store: Store = {
   checkin: { ...checkinConfig },
 }
 
+const emptyMedicalProfile: MedicalProfile = {
+  bloodGroup: '',
+  allergies: [],
+  medications: [],
+  conditions: [],
+  activeHealthPolicyId: '',
+  preferredHospital: '',
+  emergencyNote: '',
+}
+
 export const db = {
-  getOwner: async () => owner,
-  getDocuments: async () => documents,
-  getDocumentById: async (id: string) => documents.find((d) => d.id === id) ?? null,
-  getPolicies: async () => policies,
-  getPolicyById: async (id: string) => policies.find((p) => p.id === id) ?? null,
+  getOwner: async (): Promise<Owner> => {
+    if (await isDemoUser()) return owner
+    const email = (await getSessionEmail()) ?? ''
+    return { id: 'owner-self', name: '', email, protecting: '' }
+  },
+  getDocuments: async () => ((await isDemoUser()) ? documents : []),
+  getDocumentById: async (id: string) =>
+    (await isDemoUser()) ? (documents.find((d) => d.id === id) ?? null) : null,
+  getPolicies: async () => ((await isDemoUser()) ? policies : []),
+  getPolicyById: async (id: string) =>
+    (await isDemoUser()) ? (policies.find((p) => p.id === id) ?? null) : null,
   getReminders: async () => {
+    if (!(await isDemoUser())) return []
     // Derive reminders live so statuses stay believable relative to "now".
     const { buildReminders } = await import('./reminders')
     return buildReminders(policies, documents)
   },
-  getMedicalProfile: async () => medicalProfile,
-  getBeneficiaries: async () => beneficiaries,
-  getGuardians: async () => guardians,
-  getInstructions: async () => instructions,
-  getContacts: async () => contacts,
+  getMedicalProfile: async () => ((await isDemoUser()) ? medicalProfile : emptyMedicalProfile),
+  getBeneficiaries: async () => ((await isDemoUser()) ? beneficiaries : []),
+  getGuardians: async () => ((await isDemoUser()) ? guardians : []),
+  getInstructions: async () => ((await isDemoUser()) ? instructions : []),
+  getContacts: async () => ((await isDemoUser()) ? contacts : []),
 
   getTriggerState: async (): Promise<TriggerState> => store.triggerState,
   setTriggerState: (next: TriggerState) => {

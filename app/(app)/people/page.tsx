@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, ShieldUser, MessageCircle } from "lucide-react"
+import { CheckCircle2, Clock, ShieldUser, MessageCircle, Users } from "lucide-react"
 import { db } from "@/lib/db"
 import { CATEGORY_LABELS } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 
 export const metadata = { title: "People · Aegis" }
 
@@ -27,6 +28,21 @@ export default async function PeoplePage() {
         description="Who can reach your vault, how they prove it's them, and exactly what they can see."
       />
 
+      {beneficiaries.length === 0 && guardians.length === 0 ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Users />
+            </EmptyMedia>
+            <EmptyTitle>No people added yet</EmptyTitle>
+            <EmptyDescription>
+              Add the beneficiaries who can access your vault, set what each one can see, and name an executor to
+              confirm before anything is released.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <>
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-lg text-foreground">Beneficiaries</h2>
         <div className="grid gap-4 md:grid-cols-2">
@@ -95,6 +111,8 @@ export default async function PeoplePage() {
           ))}
         </div>
       </section>
+        </>
+      )}
     </div>
   )
 }

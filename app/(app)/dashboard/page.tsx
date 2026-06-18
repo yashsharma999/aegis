@@ -8,8 +8,7 @@ import { db } from '@/lib/db'
 import { CATEGORY_LABELS, type DocumentCategory } from '@/lib/types'
 
 export default async function DashboardPage() {
-  const [owner, documents, reminders, checkin, { mode }] = await Promise.all([
-    db.getOwner(),
+  const [documents, reminders, checkin, { mode }] = await Promise.all([
     db.getDocuments(),
     db.getReminders(),
     db.getCheckin(),

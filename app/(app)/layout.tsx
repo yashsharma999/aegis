@@ -7,11 +7,15 @@ import { NotificationsBell } from '@/components/notifications-bell'
 import { db } from '@/lib/db'
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const [{ mode }, reminders] = await Promise.all([db.getTriggerState(), db.getReminders()])
+  const [{ mode }, reminders, owner] = await Promise.all([
+    db.getTriggerState(),
+    db.getReminders(),
+    db.getOwner(),
+  ])
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar owner={owner} />
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur">
           <SidebarTrigger />

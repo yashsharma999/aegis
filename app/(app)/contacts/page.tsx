@@ -2,6 +2,7 @@ import { Phone } from "lucide-react"
 import { db } from "@/lib/db"
 import { PageHeader } from "@/components/page-header"
 import { Card, CardContent } from "@/components/ui/card"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 
 export const metadata = { title: "Contacts · Aegis" }
 
@@ -14,8 +15,22 @@ export default async function ContactsPage() {
         title="Key contacts"
         description="The people your family should call first, with context for why each one matters."
       />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {contacts.map((c) => (
+      {contacts.length === 0 ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Phone />
+            </EmptyMedia>
+            <EmptyTitle>No contacts saved</EmptyTitle>
+            <EmptyDescription>
+              Add the people your family should call first — your doctor, lawyer, and bank manager — with a note on why
+              each one matters.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {contacts.map((c) => (
           <Card key={c.id} className="rounded-2xl">
             <CardContent className="flex flex-col gap-2 py-1">
               <div className="flex items-center justify-between gap-2">
@@ -31,9 +46,10 @@ export default async function ContactsPage() {
               </a>
               <p className="text-sm leading-relaxed text-muted-foreground">{c.notes}</p>
             </CardContent>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
