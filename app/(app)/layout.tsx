@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
-import { Separator } from '@/components/ui/separator'
 import { ModeIndicator } from '@/components/mode-indicator'
 import { NotificationsBell } from '@/components/notifications-bell'
 import { PageTransition } from '@/components/page-transition'
@@ -20,7 +19,6 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b border-border/70 bg-background/75 px-4 backdrop-blur-md">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="h-5" />
           <span className="font-serif text-base font-semibold tracking-tight">Aegis</span>
           <span className="hidden text-xs text-muted-foreground sm:inline">
             Chief of staff for life
