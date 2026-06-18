@@ -27,7 +27,6 @@ export function PageHeader({
         </div>
         {action ? <div className="flex shrink-0 items-center gap-2">{action}</div> : null}
       </div>
-      <div className="rule-seal" aria-hidden="true" />
     </div>
   )
 }

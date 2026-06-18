@@ -195,28 +195,13 @@
 }
 
 @layer components {
-  /* Letterspaced ledger label — the archival "filed under" voice. */
+  /* Small uppercase label */
   .overline {
     font-size: 0.6875rem;
     line-height: 1;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.1em;
     color: var(--muted-foreground);
-  }
-  /* A hairline rule with a single accent tick — used as section seals. */
-  .rule-seal {
-    position: relative;
-    height: 1px;
-    background: var(--border);
-  }
-  .rule-seal::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 1px;
-    width: 2.5rem;
-    background: var(--accent);
   }
 }
