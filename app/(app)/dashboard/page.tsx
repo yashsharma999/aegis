@@ -1,7 +1,6 @@
-import { CheckCircle2, Circle, Sparkles } from 'lucide-react'
+import { CheckCircle2, Circle } from 'lucide-react'
 import { PageHeader } from '@/components/page-header'
 import { ReadinessRing } from '@/components/readiness-ring'
-import { AlertsFeed } from '@/components/alerts-feed'
 import { StatusCard } from '@/components/status-card'
 import { QuickActions } from '@/components/quick-actions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,14 +30,6 @@ export default async function DashboardPage() {
         title={`Good to see you, ${owner.name.split(' ')[0]}`}
         description={`Everything you'd ever need to find, file, or hand over — in one calm place. You're protecting ${owner.protecting}.`}
       />
-
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-accent-foreground" />
-          <h2 className="font-serif text-xl font-semibold">What needs you right now</h2>
-        </div>
-        <AlertsFeed reminders={reminders} />
-      </section>
 
       <section className="grid gap-5 lg:grid-cols-3">
         <Card className="rounded-3xl lg:col-span-1">
