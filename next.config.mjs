@@ -6,8 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // PDF.js (via unpdf) is a large native-ish lib — keep it out of the bundle.
-  serverExternalPackages: ['unpdf'],
+  // Keep heavy server-only libs out of the bundle: PDF.js (unpdf) + Mastra runtime.
+  serverExternalPackages: ['unpdf', '@mastra/core'],
   experimental: {
     // PDF uploads exceed the default 1 MB Server Action body limit.
     serverActions: {
