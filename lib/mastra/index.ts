@@ -8,6 +8,7 @@
 import { Mastra } from '@mastra/core/mastra'
 import { vaultAgent } from './agent'
 import { storage } from './storage'
+import { resolveGrant, getOwnerName } from '../access'
 
 const webOrigin = (process.env.WEB_ORIGIN ?? 'http://localhost:3000').split(',')
 
@@ -19,13 +20,46 @@ export const mastra = new Mastra({
     cors: {
       origin: webOrigin,
       allowMethods: ['GET', 'POST', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'x-mastra-client-type', 'x-aegis-user-id'],
+      allowHeaders: [
+        'Content-Type',
+        'x-mastra-client-type',
+        'x-aegis-user-id',
+        'x-aegis-grant-token',
+        'x-aegis-mode',
+      ],
       credentials: false,
     },
     middleware: [
+      // Per-request identity. A beneficiary presents a grant TOKEN (never an
+      // owner id): we resolve it to the owner here and only open the vault if
+      // it's actually in legacy mode. An owner presents their user id (+ an
+      // optional mode for self-previewing legacy).
       async (context, next) => {
+        const requestContext = context.get('requestContext')
+        const grantToken = context.req.header('x-aegis-grant-token')
+
+        if (grantToken) {
+          const grant = await resolveGrant(grantToken)
+          if (!grant.valid || !grant.legacyActive || !grant.ownerId) {
+            return context.json({ error: 'This access link is not active.' }, 403)
+          }
+          requestContext.set('userId', grant.ownerId)
+          requestContext.set('mode', 'legacy')
+          requestContext.set('actorName', grant.beneficiaryName)
+          requestContext.set('ownerName', grant.ownerName)
+          await next()
+          return
+        }
+
         const userId = context.req.header('x-aegis-user-id')
-        if (userId) context.get('requestContext').set('userId', userId)
+        if (userId) requestContext.set('userId', userId)
+        const mode = context.req.header('x-aegis-mode')
+        if (mode) requestContext.set('mode', mode)
+        // Owner previewing their own vault in legacy mode — give the persona the
+        // owner's name (only a query on the rare preview, not everyday chat).
+        if (userId && mode === 'legacy') {
+          requestContext.set('ownerName', await getOwnerName(userId))
+        }
         await next()
       },
     ],

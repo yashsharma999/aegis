@@ -2,6 +2,7 @@ import type {
   Beneficiary,
   CheckinConfig,
   Contact,
+  Credential,
   Document,
   Guardian,
   Instruction,
@@ -29,7 +30,8 @@ export const owner: Owner = {
 export const documents: Document[] = [
   {
     id: 'doc-1',
-    category: 'insurance',
+    kind: 'file',
+    category: 'health_insurance',
     title: 'HDFC Ergo Family Health Policy',
     fileName: 'hdfc-health-2024.pdf',
     notes: 'Family floater covering Ravi, Priya and Aanya. Cashless at network hospitals.',
@@ -38,7 +40,8 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-2',
-    category: 'insurance',
+    kind: 'file',
+    category: 'life_insurance',
     title: 'LIC Term Life — Jeevan Amar',
     fileName: 'lic-term-life.pdf',
     notes: 'Pure term cover. Nominee: Priya Sharma.',
@@ -47,7 +50,8 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-3',
-    category: 'medical',
+    kind: 'file',
+    category: 'documents',
     title: 'Annual Health Checkup — Apollo',
     fileName: 'apollo-checkup-report.pdf',
     notes: 'Lipid profile slightly elevated. On Atorvastatin since.',
@@ -56,7 +60,8 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-4',
-    category: 'legal',
+    kind: 'file',
+    category: 'documents',
     title: 'Last Will & Testament',
     fileName: 'will-registered-2023.pdf',
     notes: 'Registered will. Executor: brother Arjun Sharma.',
@@ -65,7 +70,8 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-5',
-    category: 'financial',
+    kind: 'file',
+    category: 'documents',
     title: 'Mutual Fund Portfolio Statement',
     fileName: 'cams-consolidated.pdf',
     notes: 'Consolidated CAMS statement across all folios.',
@@ -74,7 +80,8 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-6',
-    category: 'property',
+    kind: 'file',
+    category: 'documents',
     title: 'Flat Sale Deed — Whitefield',
     fileName: 'sale-deed-whitefield.pdf',
     notes: '3BHK, jointly held with Priya.',
@@ -83,7 +90,8 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-7',
-    category: 'vehicle',
+    kind: 'file',
+    category: 'forms',
     title: 'Car Registration — Honda City',
     fileName: 'rc-honda-city.pdf',
     notes: 'KA-05-MJ-4471. Registered owner: Ravi Sharma.',
@@ -92,21 +100,13 @@ export const documents: Document[] = [
   },
   {
     id: 'doc-8',
-    category: 'travel',
+    kind: 'file',
+    category: 'documents',
     title: 'Passport — Ravi Sharma',
     fileName: 'passport-ravi.pdf',
     notes: 'Expires soon — renewal recommended before international travel.',
     sensitive: true,
     uploadedAt: daysFromNow(-60),
-  },
-  {
-    id: 'doc-9',
-    category: 'digital',
-    title: 'Password Vault Recovery Kit',
-    fileName: '1password-emergency-kit.pdf',
-    notes: 'Emergency kit for the family password manager. Highly sensitive.',
-    sensitive: true,
-    uploadedAt: daysFromNow(-30),
   },
 ]
 
@@ -186,7 +186,7 @@ export const beneficiaries: Beneficiary[] = [
     relationship: 'Wife',
     whatsapp: '+91 98860 12345',
     verificationSecret: 'Our anniversary city: Udaipur',
-    accessScope: ['insurance', 'medical', 'legal', 'financial', 'property', 'vehicle', 'travel', 'digital'],
+    accessScope: ['health_insurance', 'life_insurance', 'forms', 'documents', 'images', 'wishes', 'instructions'],
     status: 'verified',
   },
   {
@@ -195,7 +195,7 @@ export const beneficiaries: Beneficiary[] = [
     relationship: 'Daughter',
     whatsapp: '+91 98860 77321',
     verificationSecret: 'First pet name: Coco',
-    accessScope: ['legal', 'financial'],
+    accessScope: ['documents', 'instructions'],
     status: 'pending',
   },
 ]
@@ -265,6 +265,27 @@ export const contacts: Contact[] = [
     role: 'Bank relationship manager',
     phone: '+91 98455 90011',
     notes: 'Handles the family savings and FD accounts.',
+  },
+]
+
+export const credentials: Credential[] = [
+  {
+    id: 'cred-1',
+    label: '1Password (family vault)',
+    username: 'ravi.sharma@gmail.com',
+    secret: 'Emergency Kit in the safe — master password on the printed card',
+    url: 'https://my.1password.com',
+    notes: 'Unlocks every other account login. Share only after executor confirmation.',
+    createdAt: daysFromNow(-30),
+  },
+  {
+    id: 'cred-2',
+    label: 'HDFC NetBanking',
+    username: 'ravisharma91',
+    secret: '••••••••',
+    url: 'https://netbanking.hdfcbank.com',
+    notes: 'Primary salary + savings account.',
+    createdAt: daysFromNow(-200),
   },
 ]
 

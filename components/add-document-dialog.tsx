@@ -25,15 +25,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field"
-import { CATEGORY_LABELS, type DocumentCategory } from "@/lib/types"
+import { CATEGORY_LABELS, FILE_CATEGORIES } from "@/lib/types"
 import { addDocument } from "@/lib/actions"
 
 const ERROR_MESSAGES: Record<string, string> = {
   unauthorized: "Please sign in again.",
-  no_file: "Choose a PDF file to upload.",
-  not_pdf: "Only PDF files are supported right now.",
+  no_file: "Choose a PDF or image to upload.",
+  unsupported_type: "Only PDFs and images are supported right now.",
   too_large: "That file is over the 20 MB limit.",
-  parse_failed: "We couldn't read that PDF. Try another file.",
+  parse_failed: "We couldn't read that file. Try another one.",
 }
 
 export function AddDocumentDialog() {
@@ -91,13 +91,13 @@ export function AddDocumentDialog() {
           <DialogHeader>
             <DialogTitle>Add a document</DialogTitle>
             <DialogDescription>
-              Upload a PDF. We parse and index it so your agent can answer questions across every mode.
+              Upload a PDF or image. PDFs are parsed and indexed so your agent can answer questions across every mode.
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="py-4">
             <Field>
-              <FieldLabel htmlFor="doc-file">PDF file</FieldLabel>
-              <Input id="doc-file" name="file" type="file" accept="application/pdf" required />
+              <FieldLabel htmlFor="doc-file">File</FieldLabel>
+              <Input id="doc-file" name="file" type="file" accept="application/pdf,image/*" required />
             </Field>
             <Field>
               <FieldLabel htmlFor="doc-title">Title</FieldLabel>
@@ -105,13 +105,13 @@ export function AddDocumentDialog() {
             </Field>
             <Field>
               <FieldLabel htmlFor="doc-category">Category</FieldLabel>
-              <Select name="category" defaultValue="insurance">
+              <Select name="category" defaultValue="documents">
                 <SelectTrigger id="doc-category">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {(Object.keys(CATEGORY_LABELS) as DocumentCategory[]).map((c) => (
+                    {FILE_CATEGORIES.map((c) => (
                       <SelectItem key={c} value={c}>
                         {CATEGORY_LABELS[c]}
                       </SelectItem>

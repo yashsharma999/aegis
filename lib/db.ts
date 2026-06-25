@@ -8,6 +8,7 @@
 // Reminders are derived live from policies + documents so statuses stay believable
 // relative to "now". A future phase adds the pgvector table for document embeddings.
 
+import { randomUUID } from 'node:crypto'
 import { and, eq } from 'drizzle-orm'
 import { db as orm } from './drizzle'
 import * as schema from './schema'
@@ -17,6 +18,7 @@ import type {
   Beneficiary,
   CheckinConfig,
   Contact,
+  Credential,
   Document,
   DocumentCategory,
   Guardian,
@@ -32,6 +34,23 @@ import type {
 
 async function uid(): Promise<string | null> {
   return (await getSessionUser())?.id ?? null
+}
+
+type DocumentRow = typeof schema.document.$inferSelect
+
+function toDocument(r: DocumentRow): Document {
+  return {
+    id: r.id,
+    kind: r.kind as Document['kind'],
+    category: r.category as DocumentCategory,
+    title: r.title,
+    fileName: r.fileName,
+    body: r.body,
+    notes: r.notes,
+    sensitive: r.sensitive,
+    uploadedAt: r.uploadedAt,
+    updatedAt: r.updatedAt,
+  }
 }
 
 const emptyMedicalProfile: MedicalProfile = {
@@ -68,15 +87,18 @@ export const db = {
     const id = await uid()
     if (!id) return []
     const rows = await orm.select().from(schema.document).where(eq(schema.document.userId, id))
-    return rows.map((r) => ({
-      id: r.id,
-      category: r.category as DocumentCategory,
-      title: r.title,
-      fileName: r.fileName,
-      notes: r.notes,
-      sensitive: r.sensitive,
-      uploadedAt: r.uploadedAt,
-    }))
+    return rows.map(toDocument)
+  },
+
+  // Authored markdown notes (wishes, instructions, …) — the file-less items.
+  getNotes: async (): Promise<Document[]> => {
+    const id = await uid()
+    if (!id) return []
+    const rows = await orm
+      .select()
+      .from(schema.document)
+      .where(and(eq(schema.document.userId, id), eq(schema.document.kind, 'note')))
+    return rows.map(toDocument)
   },
 
   getDocumentById: async (docId: string): Promise<Document | null> => {
@@ -86,16 +108,7 @@ export const db = {
       .select()
       .from(schema.document)
       .where(and(eq(schema.document.userId, id), eq(schema.document.id, docId)))
-    if (!r) return null
-    return {
-      id: r.id,
-      category: r.category as DocumentCategory,
-      title: r.title,
-      fileName: r.fileName,
-      notes: r.notes,
-      sensitive: r.sensitive,
-      uploadedAt: r.uploadedAt,
-    }
+    return r ? toDocument(r) : null
   },
 
   // Deletes a document + its chunks (scoped to the user) in one transaction and
@@ -210,6 +223,29 @@ export const db = {
     }))
   },
 
+  upsertBeneficiary: async (
+    b: { id?: string; name: string; relationship: string; whatsapp: string; status: Beneficiary['status'] },
+  ): Promise<string | null> => {
+    const id = await uid()
+    if (!id) return null
+    const rowId = b.id || randomUUID()
+    const values = { name: b.name, relationship: b.relationship, whatsapp: b.whatsapp, status: b.status }
+    await orm
+      .insert(schema.beneficiary)
+      .values({ userId: id, id: rowId, ...values })
+      .onConflictDoUpdate({ target: [schema.beneficiary.userId, schema.beneficiary.id], set: values })
+    return rowId
+  },
+
+  deleteBeneficiary: async (beneficiaryId: string): Promise<boolean> => {
+    const id = await uid()
+    if (!id) return false
+    await orm
+      .delete(schema.beneficiary)
+      .where(and(eq(schema.beneficiary.userId, id), eq(schema.beneficiary.id, beneficiaryId)))
+    return true
+  },
+
   getGuardians: async (): Promise<Guardian[]> => {
     const id = await uid()
     if (!id) return []
@@ -246,6 +282,113 @@ export const db = {
       phone: r.phone,
       notes: r.notes,
     }))
+  },
+
+  upsertContact: async (c: Omit<Contact, 'id'> & { id?: string }): Promise<string | null> => {
+    const id = await uid()
+    if (!id) return null
+    const rowId = c.id || randomUUID()
+    const values = { name: c.name, role: c.role, phone: c.phone, notes: c.notes }
+    await orm
+      .insert(schema.contact)
+      .values({ userId: id, id: rowId, ...values })
+      .onConflictDoUpdate({ target: [schema.contact.userId, schema.contact.id], set: values })
+    return rowId
+  },
+
+  deleteContact: async (contactId: string): Promise<boolean> => {
+    const id = await uid()
+    if (!id) return false
+    await orm
+      .delete(schema.contact)
+      .where(and(eq(schema.contact.userId, id), eq(schema.contact.id, contactId)))
+    return true
+  },
+
+  // ── Legacy-access grants (tokenized beneficiary links) ──────────────────────
+  createAccessGrant: async (beneficiaryId: string): Promise<string | null> => {
+    const id = await uid()
+    if (!id) return null
+    const token = randomUUID()
+    await orm.insert(schema.accessGrant).values({
+      token,
+      ownerId: id,
+      beneficiaryId,
+      createdAt: new Date().toISOString(),
+    })
+    return token
+  },
+
+  revokeAccessGrant: async (token: string): Promise<boolean> => {
+    const id = await uid()
+    if (!id) return false
+    await orm
+      .update(schema.accessGrant)
+      .set({ revokedAt: new Date().toISOString() })
+      .where(and(eq(schema.accessGrant.ownerId, id), eq(schema.accessGrant.token, token)))
+    return true
+  },
+
+  listAccessGrants: async (): Promise<
+    { token: string; beneficiaryId: string; createdAt: string; revokedAt: string | null }[]
+  > => {
+    const id = await uid()
+    if (!id) return []
+    const rows = await orm
+      .select({
+        token: schema.accessGrant.token,
+        beneficiaryId: schema.accessGrant.beneficiaryId,
+        createdAt: schema.accessGrant.createdAt,
+        revokedAt: schema.accessGrant.revokedAt,
+      })
+      .from(schema.accessGrant)
+      .where(eq(schema.accessGrant.ownerId, id))
+    return rows
+  },
+
+  // Credentials are SHIELDED from the agent: stored here, never chunked/indexed,
+  // and surfaced by no agent tool.
+  getCredentials: async (): Promise<Credential[]> => {
+    const id = await uid()
+    if (!id) return []
+    const rows = await orm.select().from(schema.credential).where(eq(schema.credential.userId, id))
+    return rows.map((r) => ({
+      id: r.id,
+      label: r.label,
+      username: r.username,
+      secret: r.secret,
+      url: r.url,
+      notes: r.notes,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+    }))
+  },
+
+  upsertCredential: async (
+    c: Omit<Credential, 'id' | 'createdAt' | 'updatedAt'> & { id?: string },
+  ): Promise<string | null> => {
+    const id = await uid()
+    if (!id) return null
+    const rowId = c.id || randomUUID()
+    const now = new Date().toISOString()
+    const fields = { label: c.label, username: c.username, secret: c.secret, url: c.url, notes: c.notes }
+    await orm
+      .insert(schema.credential)
+      .values({ userId: id, id: rowId, createdAt: now, ...fields })
+      .onConflictDoUpdate({
+        target: [schema.credential.userId, schema.credential.id],
+        set: { ...fields, updatedAt: now },
+      })
+    return rowId
+  },
+
+  deleteCredential: async (credentialId: string): Promise<boolean> => {
+    const id = await uid()
+    if (!id) return false
+    await orm
+      .delete(schema.credential)
+      .where(and(eq(schema.credential.userId, id), eq(schema.credential.id, credentialId)))
+    return true
   },
 
   getTriggerState: async (): Promise<TriggerState> => {

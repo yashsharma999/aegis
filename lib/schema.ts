@@ -123,18 +123,26 @@ const userFk = () =>
     .notNull()
     .references(() => user.id, { onDelete: "cascade" });
 
+// A vault "context item". `kind` discriminates how it was created and stored:
+//   'file' — an uploaded file (PDF parsed to text, or an image stored as-is)
+//   'note' — free-form markdown authored in-app (wishes, instructions, …)
+// Both are chunked into documentChunk and become agent-retrievable. Notes keep
+// their markdown source in `body` for round-trip editing; files have no body.
 export const document = pgTable(
   "document",
   {
     userId: userFk(),
     id: text("id").notNull(),
+    kind: text("kind").notNull().default("file"), // file | note
     category: text("category").notNull(),
     title: text("title").notNull(),
-    fileName: text("file_name").notNull(),
+    fileName: text("file_name"), // null for notes
+    body: text("body"), // markdown source for notes (null for files)
     notes: text("notes").notNull().default(""),
     sensitive: boolean("sensitive").notNull().default(false),
     uploadedAt: text("uploaded_at").notNull(),
-    // Document pipeline (nullable so seeded sample docs stay valid).
+    updatedAt: text("updated_at"),
+    // Document pipeline (nullable so seeded sample docs / notes stay valid).
     storageKey: text("storage_key"),
     mimeType: text("mime_type"),
     sizeBytes: integer("size_bytes"),
@@ -232,6 +240,44 @@ export const contact = pgTable(
     notes: text("notes").notNull().default(""),
   },
   (t) => [primaryKey({ columns: [t.userId, t.id] })],
+);
+
+// Structured secrets (logins, account numbers, PINs). Deliberately SHIELDED
+// from the agent: never chunked/indexed and exposed by no agent tool. Stored
+// plaintext for now — field-level encryption is a fast follow.
+export const credential = pgTable(
+  "credential",
+  {
+    userId: userFk(),
+    id: text("id").notNull(),
+    label: text("label").notNull(),
+    username: text("username").notNull().default(""),
+    secret: text("secret").notNull().default(""),
+    url: text("url").notNull().default(""),
+    notes: text("notes").notNull().default(""),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at"),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.id] })],
+);
+
+// A tokenized access link that lets an (unauthenticated) beneficiary reach the
+// owner's vault agent in Legacy Mode. The token is the bearer credential; the
+// Mastra server middleware resolves it server-side and gates on the owner's
+// vault being in `legacy` mode. ownerId is never supplied by the client.
+export const accessGrant = pgTable(
+  "access_grant",
+  {
+    token: text("token").primaryKey(),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    beneficiaryId: text("beneficiary_id").notNull(),
+    createdAt: text("created_at").notNull(),
+    expiresAt: text("expires_at"),
+    revokedAt: text("revoked_at"),
+  },
+  (t) => [index("access_grant_owner_idx").on(t.ownerId)],
 );
 
 // 1:1 medical profile.

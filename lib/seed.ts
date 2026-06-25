@@ -9,10 +9,12 @@
 import { eq } from 'drizzle-orm'
 import { db as orm } from './drizzle'
 import * as schema from './schema'
+import { ingestNote } from './documents/ingest'
 import {
   beneficiaries,
   checkinConfig,
   contacts,
+  credentials,
   documents,
   guardians,
   initialTriggerState,
@@ -21,15 +23,27 @@ import {
   owner,
   policies,
 } from './mock-data'
+import type { InstructionType } from './types'
+
+// Funeral wishes / personal messages read as "wishes"; the rest are practical
+// "instructions". Both become agent-visible markdown notes.
+const INSTRUCTION_CATEGORY: Record<InstructionType, 'wishes' | 'instructions'> = {
+  funeral: 'wishes',
+  messages: 'wishes',
+  first24: 'instructions',
+  financial: 'instructions',
+}
 
 export async function clearVault(userId: string) {
   await Promise.all([
+    orm.delete(schema.documentChunk).where(eq(schema.documentChunk.userId, userId)),
     orm.delete(schema.document).where(eq(schema.document.userId, userId)),
     orm.delete(schema.policy).where(eq(schema.policy.userId, userId)),
     orm.delete(schema.beneficiary).where(eq(schema.beneficiary.userId, userId)),
     orm.delete(schema.guardian).where(eq(schema.guardian.userId, userId)),
     orm.delete(schema.instruction).where(eq(schema.instruction.userId, userId)),
     orm.delete(schema.contact).where(eq(schema.contact.userId, userId)),
+    orm.delete(schema.credential).where(eq(schema.credential.userId, userId)),
     orm.delete(schema.medicalProfile).where(eq(schema.medicalProfile.userId, userId)),
     orm.delete(schema.vaultProfile).where(eq(schema.vaultProfile.userId, userId)),
   ])
@@ -92,15 +106,16 @@ export async function seedVault(userId: string) {
     })),
   )
 
-  await orm.insert(schema.instruction).values(
-    instructions.map((i) => ({
+  // Wishes & instructions are seeded as agent-visible markdown notes (with
+  // chunks), not structured rows — matching how users author them in-app.
+  for (const i of instructions) {
+    await ingestNote({
       userId,
-      id: i.id,
-      type: i.type,
+      category: INSTRUCTION_CATEGORY[i.type],
       title: i.title,
       body: i.body,
-    })),
-  )
+    })
+  }
 
   await orm.insert(schema.contact).values(
     contacts.map((c) => ({
@@ -110,6 +125,19 @@ export async function seedVault(userId: string) {
       role: c.role,
       phone: c.phone,
       notes: c.notes,
+    })),
+  )
+
+  await orm.insert(schema.credential).values(
+    credentials.map((c) => ({
+      userId,
+      id: c.id,
+      label: c.label,
+      username: c.username,
+      secret: c.secret,
+      url: c.url,
+      notes: c.notes,
+      createdAt: c.createdAt,
     })),
   )
 

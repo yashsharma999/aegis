@@ -54,7 +54,7 @@ export function ThreadSidebar({
   }
 
   return (
-    <div className="flex h-full w-60 shrink-0 flex-col border-r bg-secondary/20">
+    <div className="flex h-full w-60 shrink-0 flex-col rounded-xl bg-secondary/40">
       <div className="p-3">
         <Button type="button" variant="outline" className="w-full justify-start" onClick={onNew} data-icon="inline-start">
           <Plus className="size-4" />

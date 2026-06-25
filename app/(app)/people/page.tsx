@@ -1,12 +1,15 @@
 import { CheckCircle2, Clock, ShieldUser, MessageCircle, Users } from "lucide-react"
 import { db } from "@/lib/db"
-import { CATEGORY_LABELS } from "@/lib/types"
+import { categoryLabel } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
+import { LegacyAccessButton } from "@/components/legacy-access-button"
+import { BeneficiaryDialog } from "@/components/beneficiary-dialog"
+import { ConfirmDeleteButton } from "@/components/confirm-delete-button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty"
 
 export const metadata = { title: "People · Aegis" }
 
@@ -26,6 +29,7 @@ export default async function PeoplePage() {
       <PageHeader
         title="People & access"
         description="Who can reach your vault, how they prove it's them, and exactly what they can see."
+        action={<BeneficiaryDialog />}
       />
 
       {beneficiaries.length === 0 && guardians.length === 0 ? (
@@ -36,10 +40,13 @@ export default async function PeoplePage() {
             </EmptyMedia>
             <EmptyTitle>No people added yet</EmptyTitle>
             <EmptyDescription>
-              Add the beneficiaries who can access your vault, set what each one can see, and name an executor to
-              confirm before anything is released.
+              Add the beneficiaries who can reach your vault in Legacy Mode. Once added, create each one a private
+              access link with “Share access”.
             </EmptyDescription>
           </EmptyHeader>
+          <EmptyContent>
+            <BeneficiaryDialog />
+          </EmptyContent>
         </Empty>
       ) : (
         <>
@@ -68,6 +75,10 @@ export default async function PeoplePage() {
                       Pending
                     </Badge>
                   )}
+                  <div className="flex">
+                    <BeneficiaryDialog beneficiary={b} />
+                    <ConfirmDeleteButton kind="beneficiary" id={b.id} label={b.name} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
@@ -81,11 +92,13 @@ export default async function PeoplePage() {
                   <div className="flex flex-wrap gap-1.5">
                     {b.accessScope.map((scope) => (
                       <Badge key={scope} variant="secondary" className="font-normal">
-                        {CATEGORY_LABELS[scope]}
+                        {categoryLabel(scope)}
                       </Badge>
                     ))}
                   </div>
                 </div>
+                <Separator />
+                <LegacyAccessButton beneficiaryId={b.id} name={b.name} />
               </CardContent>
             </Card>
           ))}

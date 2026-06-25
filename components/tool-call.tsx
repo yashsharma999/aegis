@@ -3,12 +3,9 @@
 import { useState } from 'react'
 import {
   Search,
-  ShieldQuestion,
   BellRing,
-  HeartPulse,
-  Phone,
-  Users,
-  ScrollText,
+  Link2,
+  FileText,
   Wrench,
   Check,
   type LucideIcon,
@@ -18,12 +15,9 @@ import { cn } from '@/lib/utils'
 // Friendly label + icon per agent tool. Keep in sync with lib/mastra/tools.ts.
 const TOOLS: Record<string, { label: string; icon: LucideIcon }> = {
   searchVault: { label: 'Searching your vault', icon: Search },
-  getPolicies: { label: 'Reading your policies', icon: ShieldQuestion },
+  readDocument: { label: 'Reading the document', icon: FileText },
+  getDocumentLink: { label: 'Fetching the document link', icon: Link2 },
   getReminders: { label: 'Checking renewals', icon: BellRing },
-  getMedicalProfile: { label: 'Reading medical profile', icon: HeartPulse },
-  getContacts: { label: 'Looking up contacts', icon: Phone },
-  getBeneficiaries: { label: 'Reading beneficiaries', icon: Users },
-  getInstructions: { label: 'Reading your instructions', icon: ScrollText },
 }
 
 // Compact summary of scalar arg values, e.g. searchVault · "claim form".

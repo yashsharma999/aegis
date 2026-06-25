@@ -22,6 +22,20 @@
       "when": 1781803759845,
       "tag": "0002_gifted_shinobi_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782200959431,
+      "tag": "0003_blue_omega_flight",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782304956614,
+      "tag": "0004_slippery_wilson_fisk",
+      "breakpoints": true
     }
   ]
 }

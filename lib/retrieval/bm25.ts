@@ -105,6 +105,7 @@ export interface DocHit {
   title?: string
   score: number
   bestChunkId: string
+  snippet: string
 }
 
 export interface SearchResult {
@@ -157,6 +158,7 @@ export async function searchDocuments(
         title: r.title,
         score: r.score,
         bestChunkId: r.chunkId,
+        snippet: r.snippet,
       })
     }
   }

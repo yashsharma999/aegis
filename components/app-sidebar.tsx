@@ -13,6 +13,7 @@ import {
   Users,
   ScrollText,
   Phone,
+  KeyRound,
   Timer,
   SlidersHorizontal,
   HeartHandshake,
@@ -53,6 +54,7 @@ const vault: NavItem[] = [
   { title: 'Insurance', href: '/vault/policies', icon: ShieldQuestion },
   { title: 'Wishes & instructions', href: '/instructions', icon: ScrollText },
   { title: 'Key contacts', href: '/contacts', icon: Phone },
+  { title: 'Credentials', href: '/credentials', icon: KeyRound },
 ]
 
 const people: NavItem[] = [
@@ -65,7 +67,7 @@ const settings: NavItem[] = [
 
 const demo: NavItem[] = [
   { title: 'Demo controls', href: '/trigger', icon: SlidersHorizontal },
-  { title: 'Legacy preview', href: '/family', icon: HeartHandshake },
+  { title: 'Legacy preview', href: '/legacy-preview', icon: HeartHandshake },
 ]
 
 function NavSection({ label, items, pathname }: { label: string; items: NavItem[]; pathname: string }) {

@@ -18,28 +18,33 @@ const driver = process.env.STORAGE_DRIVER ?? 'r2'
 let _client: S3Client | null = null
 
 function r2Client(): S3Client {
-  const accountId = process.env.R2_ACCOUNT_ID
+  const endpoint = process.env.R2_ENDPOINT
   const accessKeyId = process.env.R2_ACCESS_KEY_ID
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
-  if (!accountId || !accessKeyId || !secretAccessKey) {
+  if (!endpoint || !accessKeyId || !secretAccessKey) {
     throw new Error(
-      'R2 is not configured. Set R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET in .env.local (or set STORAGE_DRIVER=local for dev).',
+      'R2 is not configured. Set R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME in .env.local (or set STORAGE_DRIVER=local for dev).',
     )
   }
   if (!_client) {
-    _client = new S3Client({
-      region: 'auto',
-      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
-      credentials: { accessKeyId, secretAccessKey },
-    })
+    _client = new S3Client({ region: 'auto', endpoint, credentials: { accessKeyId, secretAccessKey } })
   }
   return _client
 }
 
 function bucket(): string {
-  const b = process.env.R2_BUCKET
-  if (!b) throw new Error('R2_BUCKET is not set.')
+  const b = process.env.R2_BUCKET_NAME
+  if (!b) throw new Error('R2_BUCKET_NAME is not set.')
   return b
+}
+
+// Permanent public URL for an object, when the bucket has public access enabled
+// (R2_PUBLIC_URL = the pub-xxx.r2.dev domain or a custom domain). Returns null if
+// no public base is configured (caller can fall back to a signed URL).
+export function getPublicUrl(key: string): string | null {
+  const base = process.env.R2_PUBLIC_URL
+  if (!base) return null
+  return `${base.replace(/\/+$/, '')}/${key}`
 }
 
 // ── local filesystem fallback ────────────────────────────────────────────────

@@ -18,7 +18,7 @@ export default async function TriggerPage() {
             variant="outline"
             nativeButton={false}
             render={
-              <Link href="/family">
+              <Link href="/legacy-preview">
                 <HeartHandshake data-icon="inline-start" />
                 Open legacy preview
               </Link>

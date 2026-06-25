@@ -27,20 +27,7 @@ export function buildReminders(policies: Policy[], documents: Document[]): Remin
     })
   }
 
-  // Passport expiry derived from the travel document (≈ 3 months out for the demo).
-  const passport = documents.find((d) => d.category === 'travel')
-  if (passport) {
-    const due = new Date()
-    due.setMonth(due.getMonth() + 3)
-    reminders.push({
-      id: 'rem-expiry-passport',
-      kind: 'expiry',
-      title: 'Passport expiring',
-      relatedTo: passport.title,
-      dueDate: due.toISOString(),
-      status: statusFor(due.toISOString()),
-    })
-  }
+  void documents // reminders derive from structured policies; documents reserved for future expiry parsing
 
   return reminders.sort(
     (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),

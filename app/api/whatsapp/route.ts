@@ -13,10 +13,10 @@ export async function POST(request: Request) {
 
   // The active app mode gates which data/tools the agent may use.
   const { mode } = await db.getTriggerState()
-  const reply = await askAgent(message, { mode: mode as AppMode, familyName: body?.familyName })
+  const reply = await askAgent(message, { mode: mode as AppMode })
 
   // TODO: respond via Twilio's WhatsApp API instead of returning JSON.
-  return NextResponse.json({ reply: reply.text, sourceDoc: reply.sourceDoc, mode })
+  return NextResponse.json({ reply: reply.text, mode })
 }
 
 export async function GET() {

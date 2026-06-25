@@ -1,15 +1,28 @@
 // Core domain types for Aegis (codename "D-Day").
 // A single owner's vault, navigated by an AI agent across three modes of life.
 
+// A vault item's bucket. File-backed categories hold uploads; note-backed
+// categories hold authored markdown. `kind` on the item is the source of truth
+// for how it's stored; these sets just drive the create UI.
 export type DocumentCategory =
-  | 'insurance'
-  | 'medical'
-  | 'legal'
-  | 'financial'
-  | 'property'
-  | 'vehicle'
-  | 'travel'
-  | 'digital'
+  | 'health_insurance'
+  | 'life_insurance'
+  | 'forms'
+  | 'documents'
+  | 'images'
+  | 'wishes'
+  | 'instructions'
+
+export type DocumentKind = 'file' | 'note'
+
+export const NOTE_CATEGORIES: DocumentCategory[] = ['wishes', 'instructions']
+export const FILE_CATEGORIES: DocumentCategory[] = [
+  'health_insurance',
+  'life_insurance',
+  'forms',
+  'documents',
+  'images',
+]
 
 export type PolicyType = 'health' | 'term_life' | 'vehicle' | 'home' | 'travel'
 
@@ -31,12 +44,26 @@ export interface Owner {
 
 export interface Document {
   id: string
+  kind: DocumentKind
   category: DocumentCategory
   title: string
-  fileName: string
+  fileName?: string | null
+  body?: string | null
   notes: string
   sensitive: boolean
   uploadedAt: string
+  updatedAt?: string | null
+}
+
+export interface Credential {
+  id: string
+  label: string
+  username: string
+  secret: string
+  url: string
+  notes: string
+  createdAt: string
+  updatedAt?: string | null
 }
 
 export interface Policy {
@@ -133,14 +160,21 @@ export interface ChatMessage {
 }
 
 export const CATEGORY_LABELS: Record<DocumentCategory, string> = {
-  insurance: 'Insurance',
-  medical: 'Medical & Health',
-  legal: 'Legal & Will',
-  financial: 'Financial & Funds',
-  property: 'Property',
-  vehicle: 'Vehicle',
-  travel: 'Travel',
-  digital: 'Digital & Passwords',
+  health_insurance: 'Health Insurance',
+  life_insurance: 'Life Insurance',
+  forms: 'Forms',
+  documents: 'Documents',
+  images: 'Images',
+  wishes: 'Wishes',
+  instructions: 'Instructions',
+}
+
+// Old rows / unknown categories degrade to a humanized label instead of blank.
+export function categoryLabel(category: string): string {
+  return (
+    CATEGORY_LABELS[category as DocumentCategory] ??
+    category.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  )
 }
 
 export const POLICY_LABELS: Record<PolicyType, string> = {

@@ -21,9 +21,17 @@ export type ChatPart =
 
 export type Bubble = { id: string; from: 'user' | 'agent'; parts: ChatPart[] }
 
+// How a caller authenticates to the agent. Owner presents a userId; a
+// beneficiary presents a grant token (+ legacy mode). Passed straight to
+// mastraClientFor → request headers.
+type Auth = { userId?: string; grantToken?: string; mode?: string }
+
 type Session = {
   threadId: string
-  userId: string
+  userId: string // memory partition / hydrate scope (owner = userId, beneficiary = grant:<token>)
+  auth: Auth
+  resource: string
+  ephemeral: boolean // beneficiary chat: no URL flip, no history hydrate
   messages: Bubble[]
   busy: boolean
   hydrated: boolean
@@ -49,22 +57,33 @@ export function threadIdFromPath(pathname: string | null): string | null {
   return m ? m[1] : null
 }
 
-function getSession(threadId: string, userId: string, isNew: boolean): Session {
+function getSession(
+  threadId: string,
+  init: { userId: string; auth: Auth; resource: string; ephemeral: boolean; isNew: boolean },
+): Session {
   let s = sessions.get(threadId)
   if (!s) {
     s = {
       threadId,
-      userId,
+      userId: init.userId,
+      auth: init.auth,
+      resource: init.resource,
+      ephemeral: init.ephemeral,
       messages: [],
       busy: false,
-      hydrated: isNew, // a fresh chat has no history to fetch
-      needsUrlFlip: isNew, // first send flips the URL to /assistant/<id>
+      // Ephemeral (beneficiary) chats never hydrate; a fresh owner chat has no
+      // history to fetch.
+      hydrated: init.ephemeral || init.isNew,
+      // Only the owner chat flips the URL to /assistant/<id>.
+      needsUrlFlip: !init.ephemeral && init.isNew,
       listeners: new Set(),
       version: 0,
     }
     sessions.set(threadId, s)
   }
-  s.userId = userId
+  s.userId = init.userId
+  s.auth = init.auth
+  s.resource = init.resource
   return s
 }
 
@@ -118,7 +137,7 @@ async function hydrate(s: Session) {
   if (s.hydrated) return
   s.hydrated = true
   try {
-    const res = await mastraClientFor({ userId: s.userId }).listThreadMessages(s.threadId, {
+    const res = await mastraClientFor(s.auth).listThreadMessages(s.threadId, {
       agentId: VAULT_AGENT_ID,
     })
     const prior = (((res as any)?.messages ?? []).map(mapDbMessage).filter(Boolean)) as Bubble[]
@@ -177,9 +196,9 @@ async function send(s: Session, text: string, onActivity?: () => void) {
   }
 
   try {
-    const agent = mastraClientFor({ userId: s.userId }).getAgent(VAULT_AGENT_ID)
+    const agent = mastraClientFor(s.auth).getAgent(VAULT_AGENT_ID)
     const res = await agent.stream([{ role: 'user', content: trimmed }], {
-      memory: { thread: s.threadId, resource: s.userId },
+      memory: { thread: s.threadId, resource: s.resource },
     })
     await res.processDataStream({ onChunk })
   } catch {
@@ -191,12 +210,7 @@ async function send(s: Session, text: string, onActivity?: () => void) {
   }
 }
 
-export function useChatSession(userId: string, onActivity?: () => void) {
-  const pathname = usePathname()
-  const fromUrl = threadIdFromPath(pathname)
-  const threadId = fromUrl ?? newChatId()
-  const s = getSession(threadId, userId, !fromUrl)
-
+function useSession(s: Session, onActivity?: () => void) {
   const subscribe = useCallback(
     (cb: () => void) => {
       s.listeners.add(cb)
@@ -217,9 +231,54 @@ export function useChatSession(userId: string, onActivity?: () => void) {
   }, [s])
 
   return {
-    threadId,
+    threadId: s.threadId,
     messages: s.messages,
     busy: s.busy,
     send: (text: string) => send(s, text, onActivity),
   }
+}
+
+// Owner chat: identity = userId, memory partitioned by userId, URL-coupled
+// (deep-linkable threads under /assistant/<id>).
+export function useChatSession(userId: string, onActivity?: () => void) {
+  const pathname = usePathname()
+  const fromUrl = threadIdFromPath(pathname)
+  const threadId = fromUrl ?? newChatId()
+  const s = getSession(threadId, {
+    userId,
+    auth: { userId },
+    resource: userId,
+    ephemeral: false,
+    isNew: !fromUrl,
+  })
+  return useSession(s, onActivity)
+}
+
+// Beneficiary chat: identity = a grant token (no owner id). Legacy mode, a
+// single stable thread per token, memory partitioned away from the owner, no
+// URL flip and no history hydrate.
+export function useLegacyChatSession(grantToken: string, onActivity?: () => void) {
+  const resource = `grant:${grantToken}`
+  const s = getSession(`legacy:${grantToken}`, {
+    userId: resource,
+    auth: { grantToken, mode: 'legacy' },
+    resource,
+    ephemeral: true,
+    isNew: true,
+  })
+  return useSession(s, onActivity)
+}
+
+// Owner previewing Legacy Mode over their OWN vault: identity = userId + legacy
+// mode, partitioned away from their everyday threads.
+export function useOwnerLegacyPreviewSession(userId: string, onActivity?: () => void) {
+  const resource = `${userId}:legacy-preview`
+  const s = getSession(`owner-legacy:${userId}`, {
+    userId: resource,
+    auth: { userId, mode: 'legacy' },
+    resource,
+    ephemeral: true,
+    isNew: true,
+  })
+  return useSession(s, onActivity)
 }

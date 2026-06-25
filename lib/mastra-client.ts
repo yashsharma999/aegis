@@ -14,10 +14,16 @@ export const mastraClient = new MastraClient({ baseUrl, credentials: 'omit' })
 
 export function mastraClientFor(opts: {
   userId?: string | null
+  grantToken?: string | null
+  mode?: string | null
   abortSignal?: AbortSignal
 }): MastraClient {
   const headers: Record<string, string> = {}
-  if (opts.userId) headers['x-aegis-user-id'] = opts.userId
+  // A beneficiary presents a grant token (no owner id); the owner presents their
+  // user id. The Mastra middleware resolves either into requestContext.
+  if (opts.grantToken) headers['x-aegis-grant-token'] = opts.grantToken
+  else if (opts.userId) headers['x-aegis-user-id'] = opts.userId
+  if (opts.mode) headers['x-aegis-mode'] = opts.mode
   if (!opts.abortSignal && Object.keys(headers).length === 0) return mastraClient
   return new MastraClient({
     baseUrl,

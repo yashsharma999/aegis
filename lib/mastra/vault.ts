@@ -5,7 +5,7 @@
 // userId (from requestContext) and query Drizzle directly. Rows are returned
 // roughly as-is — the agent reads them as JSON.
 
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { db as orm } from '../drizzle'
 import * as schema from '../schema'
 import { buildReminders } from '../reminders'
@@ -13,20 +13,25 @@ import type { Document, Policy } from '../types'
 
 export function vaultFor(userId: string) {
   return {
-    policies: () => orm.select().from(schema.policy).where(eq(schema.policy.userId, userId)),
-    documents: () => orm.select().from(schema.document).where(eq(schema.document.userId, userId)),
-    medical: async () => {
+    documentById: async (id: string) => {
       const [row] = await orm
         .select()
-        .from(schema.medicalProfile)
-        .where(eq(schema.medicalProfile.userId, userId))
+        .from(schema.document)
+        .where(and(eq(schema.document.userId, userId), eq(schema.document.id, id)))
       return row ?? null
     },
+    documentFullText: async (id: string) => {
+      const rows = await orm
+        .select({ content: schema.documentChunk.content })
+        .from(schema.documentChunk)
+        .where(and(eq(schema.documentChunk.userId, userId), eq(schema.documentChunk.documentId, id)))
+        .orderBy(schema.documentChunk.chunkIndex)
+      return rows.map((r) => r.content).join('\n\n')
+    },
     contacts: () => orm.select().from(schema.contact).where(eq(schema.contact.userId, userId)),
-    beneficiaries: () =>
-      orm.select().from(schema.beneficiary).where(eq(schema.beneficiary.userId, userId)),
-    instructions: () =>
-      orm.select().from(schema.instruction).where(eq(schema.instruction.userId, userId)),
+    // Reminders derive due dates from any structured policies plus uploaded
+    // documents. With document-only vaults this falls back to document-derived
+    // dates; structured policies contribute only when seeded.
     reminders: async () => {
       const [policies, documents] = await Promise.all([
         orm.select().from(schema.policy).where(eq(schema.policy.userId, userId)),

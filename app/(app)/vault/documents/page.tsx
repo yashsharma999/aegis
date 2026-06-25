@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react"
 import { db } from "@/lib/db"
-import { CATEGORY_LABELS, type DocumentCategory } from "@/lib/types"
+import { categoryLabel, type DocumentCategory } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
 import { DocumentCard } from "@/components/document-card"
 import { AddDocumentDialog } from "@/components/add-document-dialog"
@@ -10,7 +10,8 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyCont
 export const metadata = { title: "Documents · Aegis" }
 
 export default async function DocumentsPage() {
-  const documents = await db.getDocuments()
+  // Files only — authored notes (wishes/instructions) live on their own page.
+  const documents = (await db.getDocuments()).filter((d) => d.kind === "file")
 
   const byCategory = documents.reduce<Record<string, typeof documents>>((acc, doc) => {
     acc[doc.category] = acc[doc.category] ? [...acc[doc.category], doc] : [doc]
@@ -49,7 +50,7 @@ export default async function DocumentsPage() {
           <section key={category} className="flex flex-col gap-3">
             <div className="flex items-center gap-2.5">
               <h2 className="font-serif text-xl font-semibold tracking-tight text-foreground">
-                {CATEGORY_LABELS[category]}
+                {categoryLabel(category)}
               </h2>
               <Badge variant="secondary" className="rounded-full">{byCategory[category].length}</Badge>
             </div>
