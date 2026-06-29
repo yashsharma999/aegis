@@ -8,7 +8,6 @@ import {
   MessageCircleHeart,
   Siren,
   FileText,
-  ShieldQuestion,
   BellRing,
   Users,
   ScrollText,
@@ -51,7 +50,6 @@ const emergency: NavItem[] = [
 
 const vault: NavItem[] = [
   { title: 'Documents', href: '/vault/documents', icon: FileText },
-  { title: 'Insurance', href: '/vault/policies', icon: ShieldQuestion },
   { title: 'Wishes & instructions', href: '/instructions', icon: ScrollText },
   { title: 'Key contacts', href: '/contacts', icon: Phone },
   { title: 'Credentials', href: '/credentials', icon: KeyRound },
