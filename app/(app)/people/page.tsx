@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { categoryLabel } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
 import { LegacyAccessButton } from "@/components/legacy-access-button"
+import { ConnectTelegramButton } from "@/components/connect-telegram-button"
 import { BeneficiaryDialog } from "@/components/beneficiary-dialog"
 import { ConfirmDeleteButton } from "@/components/confirm-delete-button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -29,7 +30,12 @@ export default async function PeoplePage() {
       <PageHeader
         title="People & access"
         description="Who can reach your vault, how they prove it's them, and exactly what they can see."
-        action={<BeneficiaryDialog />}
+        action={
+          <div className="flex items-center gap-2">
+            <ConnectTelegramButton />
+            <BeneficiaryDialog />
+          </div>
+        }
       />
 
       {beneficiaries.length === 0 && guardians.length === 0 ? (

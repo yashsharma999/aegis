@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, Check, Share2, Clock } from 'lucide-react'
+import { Copy, Check, Share2, Clock, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { createLegacyLink, revokeLegacyLink } from '@/lib/actions'
 
+const BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+
 // Generates a real, revocable Legacy-Mode access link for a beneficiary. The
 // link only opens the vault once it has entered Legacy Mode (the trigger).
 export function LegacyAccessButton({ beneficiaryId, name }: { beneficiaryId: string; name: string }) {
@@ -23,6 +25,7 @@ export function LegacyAccessButton({ beneficiaryId, name }: { beneficiaryId: str
   const [copied, setCopied] = useState(false)
 
   const link = token ? `${typeof window !== 'undefined' ? window.location.origin : ''}/legacy/${token}` : null
+  const telegramLink = token && BOT ? `https://t.me/${BOT}?start=${token}` : null
 
   async function generate() {
     setPending(true)
@@ -93,6 +96,12 @@ export function LegacyAccessButton({ beneficiaryId, name }: { beneficiaryId: str
                   <span className="sr-only">Copy link</span>
                 </Button>
               </div>
+              {telegramLink && (
+                <Button variant="outline" render={<a href={telegramLink} target="_blank" rel="noopener noreferrer" />}>
+                  <Send className="size-4" data-icon="inline-start" />
+                  Open {name}'s access on Telegram
+                </Button>
+              )}
               <div className="flex items-center justify-between">
                 <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <Clock className="size-4" />

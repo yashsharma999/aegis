@@ -19,7 +19,6 @@ import {
   guardians,
   initialTriggerState,
   instructions,
-  medicalProfile,
   owner,
   policies,
 } from './mock-data'
@@ -44,7 +43,6 @@ export async function clearVault(userId: string) {
     orm.delete(schema.instruction).where(eq(schema.instruction.userId, userId)),
     orm.delete(schema.contact).where(eq(schema.contact.userId, userId)),
     orm.delete(schema.credential).where(eq(schema.credential.userId, userId)),
-    orm.delete(schema.medicalProfile).where(eq(schema.medicalProfile.userId, userId)),
     orm.delete(schema.vaultProfile).where(eq(schema.vaultProfile.userId, userId)),
   ])
 }
@@ -140,17 +138,6 @@ export async function seedVault(userId: string) {
       createdAt: c.createdAt,
     })),
   )
-
-  await orm.insert(schema.medicalProfile).values({
-    userId,
-    bloodGroup: medicalProfile.bloodGroup,
-    allergies: medicalProfile.allergies,
-    medications: medicalProfile.medications,
-    conditions: medicalProfile.conditions,
-    activeHealthPolicyId: medicalProfile.activeHealthPolicyId,
-    preferredHospital: medicalProfile.preferredHospital,
-    emergencyNote: medicalProfile.emergencyNote,
-  })
 
   await orm.insert(schema.vaultProfile).values({
     userId,

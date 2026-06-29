@@ -6,7 +6,6 @@ import type {
   Document,
   Guardian,
   Instruction,
-  MedicalProfile,
   Owner,
   Policy,
   Reminder,
@@ -167,17 +166,6 @@ export const policies: Policy[] = [
     notes: 'Honda City KA-05-MJ-4471. Renewal is overdue — vehicle is currently uninsured.',
   },
 ]
-
-export const medicalProfile: MedicalProfile = {
-  bloodGroup: 'B+',
-  allergies: ['Penicillin', 'Sulfa drugs'],
-  medications: ['Atorvastatin 10mg (nightly)', 'Telmisartan 40mg (morning)'],
-  conditions: ['Hypertension', 'Borderline high cholesterol'],
-  activeHealthPolicyId: 'pol-health',
-  preferredHospital: 'Manipal Hospital, Whitefield',
-  emergencyNote:
-    'Wife Priya is the primary emergency contact. Reacts severely to Penicillin — do not administer.',
-}
 
 export const beneficiaries: Beneficiary[] = [
   {

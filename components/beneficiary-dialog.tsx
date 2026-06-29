@@ -69,6 +69,9 @@ export function BeneficiaryDialog({ beneficiary }: { beneficiary?: Beneficiary }
             <Field>
               <FieldLabel htmlFor="ben-wa">WhatsApp / phone</FieldLabel>
               <Input id="ben-wa" name="whatsapp" type="tel" defaultValue={beneficiary?.whatsapp ?? ''} placeholder="+91 98860 12345" />
+              <p className="text-xs text-muted-foreground">
+                How they’re recognized on WhatsApp & Telegram — they message the bot from this number, no link needed.
+              </p>
             </Field>
           </FieldGroup>
           <DialogFooter>

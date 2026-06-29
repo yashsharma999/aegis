@@ -24,7 +24,6 @@ import type {
   Guardian,
   Instruction,
   InstructionType,
-  MedicalProfile,
   Owner,
   Policy,
   PolicyType,
@@ -51,16 +50,6 @@ function toDocument(r: DocumentRow): Document {
     uploadedAt: r.uploadedAt,
     updatedAt: r.updatedAt,
   }
-}
-
-const emptyMedicalProfile: MedicalProfile = {
-  bloodGroup: '',
-  allergies: [],
-  medications: [],
-  conditions: [],
-  activeHealthPolicyId: '',
-  preferredHospital: '',
-  emergencyNote: '',
 }
 
 const defaultTriggerState: TriggerState = { mode: 'everyday', timeline: [] }
@@ -187,25 +176,6 @@ export const db = {
     if (policies.length === 0 && documents.length === 0) return []
     const { buildReminders } = await import('./reminders')
     return buildReminders(policies, documents)
-  },
-
-  getMedicalProfile: async (): Promise<MedicalProfile> => {
-    const id = await uid()
-    if (!id) return emptyMedicalProfile
-    const [r] = await orm
-      .select()
-      .from(schema.medicalProfile)
-      .where(eq(schema.medicalProfile.userId, id))
-    if (!r) return emptyMedicalProfile
-    return {
-      bloodGroup: r.bloodGroup,
-      allergies: r.allergies,
-      medications: r.medications,
-      conditions: r.conditions,
-      activeHealthPolicyId: r.activeHealthPolicyId,
-      preferredHospital: r.preferredHospital,
-      emergencyNote: r.emergencyNote,
-    }
   },
 
   getBeneficiaries: async (): Promise<Beneficiary[]> => {
@@ -344,6 +314,24 @@ export const db = {
       .from(schema.accessGrant)
       .where(eq(schema.accessGrant.ownerId, id))
     return rows
+  },
+
+  // ── Telegram pairing ────────────────────────────────────────────────────────
+  // Owner mints a one-time code in the app, then sends `/start <code>` to the
+  // bot. The session-less worker consumes it (lib/telegram/resolve.ts). Codes
+  // expire after 15 minutes.
+  createTelegramPairCode: async (): Promise<string | null> => {
+    const id = await uid()
+    if (!id) return null
+    // Short, human-typeable code (the deep-link also carries it verbatim).
+    const code = randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
+    const expiresAt = new Date(Date.now() + 15 * 60_000).toISOString()
+    await orm.insert(schema.telegramPairCode).values({
+      code,
+      userId: id,
+      expiresAt,
+    })
+    return code
   },
 
   // Credentials are SHIELDED from the agent: stored here, never chunked/indexed,

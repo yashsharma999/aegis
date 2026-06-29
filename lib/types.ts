@@ -89,16 +89,6 @@ export interface Reminder {
   status: ReminderStatus
 }
 
-export interface MedicalProfile {
-  bloodGroup: string
-  allergies: string[]
-  medications: string[]
-  conditions: string[]
-  activeHealthPolicyId: string
-  preferredHospital: string
-  emergencyNote: string
-}
-
 export interface Beneficiary {
   id: string
   name: string

@@ -280,20 +280,6 @@ export const accessGrant = pgTable(
   (t) => [index("access_grant_owner_idx").on(t.ownerId)],
 );
 
-// 1:1 medical profile.
-export const medicalProfile = pgTable("medical_profile", {
-  userId: text("user_id")
-    .primaryKey()
-    .references(() => user.id, { onDelete: "cascade" }),
-  bloodGroup: text("blood_group").notNull().default(""),
-  allergies: text("allergies").array().notNull().default([]),
-  medications: text("medications").array().notNull().default([]),
-  conditions: text("conditions").array().notNull().default([]),
-  activeHealthPolicyId: text("active_health_policy_id").notNull().default(""),
-  preferredHospital: text("preferred_hospital").notNull().default(""),
-  emergencyNote: text("emergency_note").notNull().default(""),
-});
-
 // 1:1 vault profile — the owner's "protecting" line plus the per-user
 // trigger/check-in state machine (previously a global in-memory singleton).
 export const vaultProfile = pgTable("vault_profile", {
@@ -307,4 +293,36 @@ export const vaultProfile = pgTable("vault_profile", {
   lastCheckinAt: text("last_checkin_at"),
   missedCount: integer("missed_count").notNull().default(0),
   threshold: integer("threshold").notNull().default(3),
+});
+
+// Maps a Telegram account to a vault. Owners link their own account (role
+// 'owner'); beneficiaries link via a legacy grant token (role 'beneficiary',
+// grantToken set). The worker (scripts/telegram.ts) resolves an inbound sender
+// through this table, then re-checks beneficiary grants on every message
+// (lib/telegram/resolve.ts). userId is always the vault OWNER's id.
+export const telegramLink = pgTable(
+  "telegram_link",
+  {
+    telegramUserId: text("telegram_user_id").primaryKey(),
+    chatId: text("chat_id").notNull(),
+    role: text("role").notNull(), // 'owner' | 'beneficiary'
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    grantToken: text("grant_token"), // null for owners
+    displayName: text("display_name").notNull().default(""),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [index("telegram_link_user_idx").on(t.userId)],
+);
+
+// One-time pairing codes an owner generates in the app to bind their Telegram
+// account (`/start <code>`). Consumed on first use; short-lived.
+export const telegramPairCode = pgTable("telegram_pair_code", {
+  code: text("code").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  expiresAt: text("expires_at").notNull(),
+  usedAt: text("used_at"),
 });

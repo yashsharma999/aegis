@@ -36,6 +36,20 @@
       "when": 1782304956614,
       "tag": "0004_slippery_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782724400643,
+      "tag": "0005_sloppy_crystal",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782732028063,
+      "tag": "0006_overconfident_gressill",
+      "breakpoints": true
     }
   ]
 }

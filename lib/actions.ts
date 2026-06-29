@@ -56,7 +56,6 @@ export async function runTrigger(action: TriggerAction): Promise<TriggerState> {
   await db.setTriggerState(next)
   revalidatePath('/trigger')
   revalidatePath('/dashboard')
-  revalidatePath('/emergency')
   return next
 }
 
@@ -248,6 +247,18 @@ export async function revokeLegacyLink(token: string): Promise<{ ok: boolean }> 
   const ok = await db.revokeAccessGrant(token)
   revalidatePath('/people')
   return { ok }
+}
+
+// Mints a one-time code the owner sends to the Telegram bot (`/start <code>`)
+// to link their own account to their vault. See scripts/telegram.ts.
+export async function createTelegramPairCode(): Promise<
+  { ok: true; code: string } | { ok: false }
+> {
+  const user = await getSessionUser()
+  if (!user) return { ok: false }
+  const code = await db.createTelegramPairCode()
+  if (!code) return { ok: false }
+  return { ok: true, code }
 }
 
 export async function deleteNote(noteId: string): Promise<{ ok: boolean }> {

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircleHeart, FilePlus2, Siren, BellRing, ArrowUpRight } from 'lucide-react'
+import { MessageCircleHeart, FilePlus2, BellRing, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const actions = [
@@ -24,19 +24,11 @@ const actions = [
     icon: BellRing,
     accent: false,
   },
-  {
-    title: 'Emergency mode',
-    description: 'Break-glass medical ID',
-    href: '/emergency',
-    icon: Siren,
-    accent: false,
-    danger: true,
-  },
 ]
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       {actions.map((a) => {
         const Icon = a.icon
         return (
@@ -46,7 +38,6 @@ export function QuickActions() {
             className={cn(
               'group relative flex flex-col gap-6 rounded-xl border bg-card p-5 transition-all duration-200',
               'hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.18)]',
-              a.danger && 'hover:border-emergency/50',
             )}
           >
             <span
@@ -54,9 +45,7 @@ export function QuickActions() {
                 'flex size-10 items-center justify-center rounded-full border transition-colors',
                 a.accent
                   ? 'border-accent/50 bg-accent/15 text-accent-foreground'
-                  : a.danger
-                    ? 'border-emergency/30 text-emergency'
-                    : 'border-border text-foreground/70 group-hover:border-foreground/30',
+                  : 'border-border text-foreground/70 group-hover:border-foreground/30',
               )}
             >
               <Icon className="size-5" strokeWidth={1.75} />

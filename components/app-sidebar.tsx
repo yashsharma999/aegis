@@ -6,7 +6,6 @@ import {
   ShieldCheck,
   LayoutDashboard,
   MessageCircleHeart,
-  Siren,
   FileText,
   BellRing,
   Users,
@@ -42,10 +41,6 @@ const everyday: NavItem[] = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Ask the agent', href: '/assistant', icon: MessageCircleHeart },
   { title: 'Renewal radar', href: '/reminders', icon: BellRing },
-]
-
-const emergency: NavItem[] = [
-  { title: 'Emergency mode', href: '/emergency', icon: Siren },
 ]
 
 const vault: NavItem[] = [
@@ -135,7 +130,6 @@ export function AppSidebar({ owner }: { owner: Owner }) {
       </SidebarHeader>
       <SidebarContent>
         <NavSection label="Everyday" items={everyday} pathname={pathname} />
-        <NavSection label="Emergency" items={emergency} pathname={pathname} />
         <NavSection label="Vault" items={vault} pathname={pathname} />
         <NavSection label="People" items={people} pathname={pathname} />
         <NavSection label="Settings" items={settings} pathname={pathname} />

@@ -27,7 +27,6 @@ export const config = {
     '/instructions/:path*',
     '/contacts/:path*',
     '/people/:path*',
-    '/emergency/:path*',
     '/reminders/:path*',
     '/trigger/:path*',
     '/settings/:path*',

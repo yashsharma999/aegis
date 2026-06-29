@@ -15,6 +15,8 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
     "retrieve": "tsx scripts/retrieve.ts",
+    "telegram": "tsx scripts/telegram.ts",
+    "telegram:webhook": "tsx scripts/telegram-setwebhook.ts",
     "eval": "tsx scripts/eval.ts",
     "mastra:dev": "mastra dev --dir lib/mastra --env .env.local",
     "mastra:build": "mastra build --dir lib/mastra",
