@@ -110,6 +110,11 @@ export async function bindSender(
   const grant = await resolveGrant(code)
   if (grant.valid && grant.ownerId) {
     await upsertLink(tgId, chatId, 'beneficiary', grant.ownerId, code, displayName)
+    const [g] = await orm
+      .select({ beneficiaryId: schema.accessGrant.beneficiaryId })
+      .from(schema.accessGrant)
+      .where(eq(schema.accessGrant.token, code))
+    if (g) await markVerified(grant.ownerId, g.beneficiaryId)
     const note = grant.legacyActive
       ? `You're connected to ${grant.ownerName}'s vault.`
       : `You're linked. ${grant.ownerName}'s vault isn't open yet — I'll be here when it is.`
@@ -158,6 +163,7 @@ export async function bindByPhone(
   const { userId: ownerId, id: beneficiaryId } = matches[0]
   const token = await findOrCreateGrant(ownerId, beneficiaryId)
   await upsertLink(String(telegramUserId), chatId, 'beneficiary', ownerId, token, displayName)
+  await markVerified(ownerId, beneficiaryId)
 
   const grant = await resolveGrant(token)
   const note = grant.legacyActive
@@ -200,6 +206,15 @@ function phoneMatches(stored: string | null, target: string): boolean {
   if (!a || !target) return false
   const tail = (s: string) => s.slice(-10)
   return a === target || (a.length >= 10 && target.length >= 10 && tail(a) === tail(target))
+}
+
+// Connecting on Telegram (verified phone or a valid grant link) is our proof of
+// identity → flip the beneficiary's badge to verified.
+async function markVerified(ownerId: string, beneficiaryId: string): Promise<void> {
+  await orm
+    .update(schema.beneficiary)
+    .set({ status: 'verified' })
+    .where(and(eq(schema.beneficiary.userId, ownerId), eq(schema.beneficiary.id, beneficiaryId)))
 }
 
 async function upsertLink(

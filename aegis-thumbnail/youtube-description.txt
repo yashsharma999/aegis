@@ -1,0 +1,17 @@
+Aegis is a private vault with an AI agent that safeguards your most important documents, notes, contacts, and credentials, then securely shares the right information with your loved ones when it matters most, on the web or over Telegram.
+
+The problem: when someone passes away or is incapacitated, their family is often locked out of the things that matter most, like insurance policies, account details, and key documents. That information usually lives in one person's head or a drawer nobody can find. A password manager can store secrets, but it cannot answer questions. Aegis can.
+
+What it does:
+- Keeps your important context in one secure vault: files, rich notes, structured contacts, and shielded credentials.
+- Answers anything in plain language. The agent searches your vault, reads the right document, and replies with the source cited.
+- Surfaces what is time sensitive, like renewals and premiums, pulled straight from your documents.
+- Gives beneficiaries scoped access through a secure grant link, without ever exposing your raw logins.
+- Works on the web and right inside Telegram, using the exact same agent.
+
+The AWS Database choice:
+We built Aegis on Amazon Aurora (PostgreSQL Serverless v2), and the choice was deliberate. A vault is deeply relational, so documents, text chunks, contacts, reminders, and the agent's own memory all live in one carefully modeled schema. We wrote BM25 full-text ranking in plain SQL, with no extensions and no separate vector database, so it runs on standard Postgres unchanged. Aurora gives us managed durability and automatic serverless scaling that handles a quiet vault or a sudden burst equally well, with no proprietary lock-in.
+
+Built with: Next.js, React, TypeScript, Tailwind CSS, shadcn/ui, Mastra, the AI SDK, Anthropic Claude, Better Auth, Drizzle ORM, Amazon Aurora (PostgreSQL Serverless v2), AWS S3, and Vercel. The whole app runs on Vercel with the agent in-process. One agent, one retrieval path, ready to ship.
+
+Built for the AWS Database hackathon.

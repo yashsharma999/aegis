@@ -4,7 +4,6 @@ import type {
   Contact,
   Credential,
   Document,
-  Guardian,
   Instruction,
   Owner,
   Policy,
@@ -188,22 +187,6 @@ export const beneficiaries: Beneficiary[] = [
   },
 ]
 
-export const guardians: Guardian[] = [
-  {
-    id: 'gua-1',
-    name: 'Arjun Sharma',
-    relationship: 'Brother',
-    whatsapp: '+91 99020 45678',
-    role: 'executor',
-  },
-  {
-    id: 'gua-2',
-    name: 'Dr. Meera Nair',
-    relationship: 'Family friend & physician',
-    whatsapp: '+91 98450 33210',
-    role: 'temporary_guardian',
-  },
-]
 
 export const instructions: Instruction[] = [
   {

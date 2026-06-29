@@ -17,14 +17,14 @@ const STEPS = [
   {
     icon: Users,
     title: "Name your people",
-    body: "Choose beneficiaries and guardians. Decide exactly what each person can see, recognized by their phone number on Telegram so only the right people ever gain access.",
+    body: "Choose your beneficiaries. Decide exactly what each person can see, recognized by their phone number on Telegram so only the right people ever gain access.",
     points: ["Per-person access scopes", "Telegram identity by phone number", "An executor to confirm before anything is released"],
   },
   {
     icon: MessageCircle,
     title: "Set the safety net",
     body: "Configure your check-in cadence. If you stop responding, Aegis checks in with you first, then escalates carefully — reaching out to your trusted contacts only after a confirmation step.",
-    points: ["Regular Telegram check-ins", "Guardian access if you can't act", "Confirmed handoff before anything is released"],
+    points: ["Regular Telegram check-ins", "An executor steps in if you can't act", "Confirmed handoff before anything is released"],
   },
   {
     icon: ShieldCheck,

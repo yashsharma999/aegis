@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react'
 import {
   Siren,
-  UserCog,
   CalendarX,
   CheckCheck,
   RotateCcw,
@@ -38,13 +37,6 @@ const buttons: {
     description: 'Break-glass medical mode',
     icon: Siren,
     className: 'border-emergency/40 text-emergency hover:bg-emergency/10',
-  },
-  {
-    action: 'guardian',
-    label: 'Grant temporary guardian',
-    description: 'Incapacity access',
-    icon: UserCog,
-    className: 'hover:bg-secondary',
   },
   {
     action: 'missed',

@@ -204,19 +204,6 @@ export const beneficiary = pgTable(
   (t) => [primaryKey({ columns: [t.userId, t.id] })],
 );
 
-export const guardian = pgTable(
-  "guardian",
-  {
-    userId: userFk(),
-    id: text("id").notNull(),
-    name: text("name").notNull(),
-    relationship: text("relationship").notNull(),
-    whatsapp: text("whatsapp").notNull(),
-    role: text("role").notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.userId, t.id] })],
-);
-
 export const instruction = pgTable(
   "instruction",
   {

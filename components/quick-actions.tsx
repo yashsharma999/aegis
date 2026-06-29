@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MessageCircleHeart, FilePlus2, BellRing, ArrowUpRight } from 'lucide-react'
+import { MessageCircleHeart, FilePlus2, CalendarCheck, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const actions = [
@@ -18,10 +18,10 @@ const actions = [
     accent: true,
   },
   {
-    title: 'Renewal radar',
-    description: 'See what needs attention',
-    href: '/reminders',
-    icon: BellRing,
+    title: 'Safety net',
+    description: 'Check in & review escalation',
+    href: '/settings/checkin',
+    icon: CalendarCheck,
     accent: false,
   },
 ]

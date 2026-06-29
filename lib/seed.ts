@@ -16,7 +16,6 @@ import {
   contacts,
   credentials,
   documents,
-  guardians,
   initialTriggerState,
   instructions,
   owner,
@@ -39,7 +38,6 @@ export async function clearVault(userId: string) {
     orm.delete(schema.document).where(eq(schema.document.userId, userId)),
     orm.delete(schema.policy).where(eq(schema.policy.userId, userId)),
     orm.delete(schema.beneficiary).where(eq(schema.beneficiary.userId, userId)),
-    orm.delete(schema.guardian).where(eq(schema.guardian.userId, userId)),
     orm.delete(schema.instruction).where(eq(schema.instruction.userId, userId)),
     orm.delete(schema.contact).where(eq(schema.contact.userId, userId)),
     orm.delete(schema.credential).where(eq(schema.credential.userId, userId)),
@@ -90,17 +88,6 @@ export async function seedVault(userId: string) {
       verificationSecret: b.verificationSecret,
       accessScope: b.accessScope,
       status: b.status,
-    })),
-  )
-
-  await orm.insert(schema.guardian).values(
-    guardians.map((g) => ({
-      userId,
-      id: g.id,
-      name: g.name,
-      relationship: g.relationship,
-      whatsapp: g.whatsapp,
-      role: g.role,
     })),
   )
 

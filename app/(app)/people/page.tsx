@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, ShieldUser, MessageCircle, Users } from "lucide-react"
+import { CheckCircle2, Clock, MessageCircle, Users } from "lucide-react"
 import { db } from "@/lib/db"
 import { categoryLabel } from "@/lib/types"
 import { PageHeader } from "@/components/page-header"
@@ -23,7 +23,7 @@ function initials(name: string) {
 }
 
 export default async function PeoplePage() {
-  const [beneficiaries, guardians] = await Promise.all([db.getBeneficiaries(), db.getGuardians()])
+  const beneficiaries = await db.getBeneficiaries()
 
   return (
     <div className="flex flex-col gap-6">
@@ -38,7 +38,7 @@ export default async function PeoplePage() {
         }
       />
 
-      {beneficiaries.length === 0 && guardians.length === 0 ? (
+      {beneficiaries.length === 0 ? (
         <Empty className="border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -105,26 +105,6 @@ export default async function PeoplePage() {
                 </div>
                 <Separator />
                 <LegacyAccessButton beneficiaryId={b.id} name={b.name} />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="font-serif text-2xl font-semibold tracking-tight text-foreground">Guardians &amp; executor</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {guardians.map((g) => (
-            <Card key={g.id} className="rounded-xl transition-colors hover:border-foreground/20">
-              <CardContent className="flex items-center gap-3 py-1">
-                <span className="flex size-11 items-center justify-center rounded-full border border-accent/50 bg-accent/15 text-accent-foreground">
-                  <ShieldUser className="size-5" strokeWidth={1.75} />
-                </span>
-                <div className="flex flex-1 flex-col gap-0.5">
-                  <span className="font-medium">{g.name}</span>
-                  <span className="text-sm text-muted-foreground">{g.relationship}</span>
-                </div>
-                <Badge variant="outline">{g.role === "executor" ? "Executor" : "Temporary guardian"}</Badge>
               </CardContent>
             </Card>
           ))}

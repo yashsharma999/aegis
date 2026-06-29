@@ -19,3 +19,6 @@ uploads/
 
 # Mastra dev/build output
 .mastra/
+
+# Large demo media — host on the submission platform / YouTube, not in git
+aegis-thumbnail/output/*.mp4

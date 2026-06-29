@@ -21,7 +21,6 @@ import type {
   Credential,
   Document,
   DocumentCategory,
-  Guardian,
   Instruction,
   InstructionType,
   Owner,
@@ -199,11 +198,13 @@ export const db = {
     const id = await uid()
     if (!id) return null
     const rowId = b.id || randomUUID()
-    const values = { name: b.name, relationship: b.relationship, whatsapp: b.whatsapp, status: b.status }
+    // status is set on insert only — never overwritten on edit, so a beneficiary
+    // verified via Telegram stays verified when the owner edits their details.
+    const editable = { name: b.name, relationship: b.relationship, whatsapp: b.whatsapp }
     await orm
       .insert(schema.beneficiary)
-      .values({ userId: id, id: rowId, ...values })
-      .onConflictDoUpdate({ target: [schema.beneficiary.userId, schema.beneficiary.id], set: values })
+      .values({ userId: id, id: rowId, ...editable, status: b.status })
+      .onConflictDoUpdate({ target: [schema.beneficiary.userId, schema.beneficiary.id], set: editable })
     return rowId
   },
 
@@ -214,19 +215,6 @@ export const db = {
       .delete(schema.beneficiary)
       .where(and(eq(schema.beneficiary.userId, id), eq(schema.beneficiary.id, beneficiaryId)))
     return true
-  },
-
-  getGuardians: async (): Promise<Guardian[]> => {
-    const id = await uid()
-    if (!id) return []
-    const rows = await orm.select().from(schema.guardian).where(eq(schema.guardian.userId, id))
-    return rows.map((r) => ({
-      id: r.id,
-      name: r.name,
-      relationship: r.relationship,
-      whatsapp: r.whatsapp,
-      role: r.role as Guardian['role'],
-    }))
   },
 
   getInstructions: async (): Promise<Instruction[]> => {

@@ -99,13 +99,6 @@ export interface Beneficiary {
   status: 'verified' | 'pending'
 }
 
-export interface Guardian {
-  id: string
-  name: string
-  relationship: string
-  whatsapp: string
-  role: 'executor' | 'temporary_guardian'
-}
 
 export interface Instruction {
   id: string

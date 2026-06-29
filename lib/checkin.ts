@@ -1,7 +1,7 @@
 // The mode/state-machine transitions, called by the /trigger demo buttons.
 //
-// TODO: production cron pings owner via Telegram; missed check-ins advance toward
-// legacy activation; emergency/guardian modes are entered explicitly.
+// Missed check-ins advance toward legacy activation (automated by the daily
+// cron — app/api/cron/checkin); emergency mode is entered explicitly.
 
 import type { AppMode, TimelineEvent, TriggerState } from './types'
 
@@ -22,21 +22,19 @@ export const transitions = {
       'Break-glass emergency mode activated. Medical ID and health policy are now front-and-center.',
     ),
 
-  grantTemporaryGuardian: (prev: TriggerState): TriggerState =>
-    withEvent(
-      prev,
-      'incapacity',
-      'Incapacity',
-      'Temporary guardian access granted to Dr. Meera Nair while the owner is incapacitated.',
-    ),
-
-  simulateMissedCheckin: (prev: TriggerState, missedCount: number, threshold: number): TriggerState => {
+  simulateMissedCheckin: (
+    prev: TriggerState,
+    missedCount: number,
+    threshold: number,
+    nudged: boolean,
+  ): TriggerState => {
     if (missedCount < threshold) {
       return withEvent(
         prev,
         prev.mode === 'everyday' ? 'everyday' : prev.mode,
         'Missed check-in',
-        `Owner missed a check-in (${missedCount}/${threshold}). A Telegram nudge was sent.`,
+        `Owner missed a check-in (${missedCount}/${threshold}).` +
+          (nudged ? ' A Telegram nudge was sent.' : ' (Connect Telegram to receive nudges.)'),
       )
     }
     return withEvent(

@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from './db'
 import { transitions } from './checkin'
 import { getSessionUser } from './session'
+import { notifyOwnerByUserId, checkinNudgeText } from './telegram/notify'
 import { ingestFile, ingestNote, reindexNote } from './documents/ingest'
 import { PdfPasswordError } from './documents/parse'
 import { deleteObject } from './storage'
@@ -16,7 +17,6 @@ const MAX_UPLOAD_BYTES = 20 * 1024 * 1024 // 20 MB
 
 export type TriggerAction =
   | 'emergency'
-  | 'guardian'
   | 'missed'
   | 'executor'
   | 'reset'
@@ -30,13 +30,15 @@ export async function runTrigger(action: TriggerAction): Promise<TriggerState> {
     case 'emergency':
       next = transitions.triggerEmergency(prev)
       break
-    case 'guardian':
-      next = transitions.grantTemporaryGuardian(prev)
-      break
     case 'missed': {
       const missedCount = Math.min(checkin.missedCount + 1, checkin.threshold)
       await db.setCheckin({ ...checkin, missedCount })
-      next = transitions.simulateMissedCheckin(prev, missedCount, checkin.threshold)
+      // Actually nudge the owner on Telegram (if they've connected it).
+      const user = await getSessionUser()
+      const nudged = user
+        ? await notifyOwnerByUserId(user.id, checkinNudgeText(missedCount, checkin.threshold))
+        : false
+      next = transitions.simulateMissedCheckin(prev, missedCount, checkin.threshold, nudged)
       break
     }
     case 'executor':
@@ -217,7 +219,9 @@ export async function saveBeneficiary(formData: FormData): Promise<SaveResult> {
     name,
     relationship: (formData.get('relationship') as string)?.trim() || '',
     whatsapp: (formData.get('whatsapp') as string)?.trim() || '',
-    status: 'verified',
+    // Starts unverified; becomes 'verified' when they connect on Telegram
+    // (their phone number matches — see lib/telegram/resolve.ts). Ignored on edit.
+    status: 'pending',
   })
   if (!id) return { ok: false, error: 'unauthorized' }
   revalidatePath('/people')
