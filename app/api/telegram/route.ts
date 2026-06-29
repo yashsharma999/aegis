@@ -8,10 +8,11 @@ import { handleMessage } from '@/lib/telegram/handle'
 //
 // The agent turn can take many seconds, so we ACK immediately (200) and finish
 // the work in after() — Telegram never retries, and there are no duplicate
-// replies. maxDuration keeps the background work alive (Vercel Fluid compute).
+// replies. maxDuration keeps the background work alive: 60s is the Vercel Hobby
+// ceiling (raise toward 300 on Pro/Fluid Compute for very long turns).
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-export const maxDuration = 300
+export const maxDuration = 60
 
 const SECRET = process.env.TELEGRAM_WEBHOOK_SECRET ?? ''
 
