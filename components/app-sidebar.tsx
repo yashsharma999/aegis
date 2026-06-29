@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   MessageCircleHeart,
   FileText,
-  BellRing,
   Users,
   ScrollText,
   Phone,
@@ -40,7 +39,6 @@ type NavItem = { title: string; href: string; icon: React.ElementType }
 const everyday: NavItem[] = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { title: 'Ask the agent', href: '/assistant', icon: MessageCircleHeart },
-  { title: 'Renewal radar', href: '/reminders', icon: BellRing },
 ]
 
 const vault: NavItem[] = [
