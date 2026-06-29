@@ -1,0 +1,13 @@
+Everyone has a handful of things their family would be lost without. Insurance policies, account details, key documents. Today that lives in one person's head or a drawer, and when something happens, the people left behind cannot find it or understand it. We built Aegis for them: families and next of kin, and anyone who wants their affairs to be findable when it matters. We chose this problem because it is universal, deeply human, and still unsolved. A password manager can store secrets, but it cannot answer questions.
+
+Aegis is a private vault with an AI agent. You keep your documents, notes, contacts, and credentials in one secure place.
+
+Then you just ask. The agent searches your vault with full-text search, reads the right document, and answers in plain language with the source cited. No scrolling through PDFs.
+
+It also surfaces what is time sensitive, like renewals and premiums, pulled straight from your documents.
+
+When it matters most, you share a secure link with a loved one. The same agent guides them through everything, without ever exposing your raw logins.
+
+And you can talk to your vault right inside Telegram. The same agent, wherever you are.
+
+For the database we chose Amazon Aurora, PostgreSQL Serverless v2, and the choice was deliberate. A vault is deeply relational. Documents, their text chunks, contacts, reminders, and the agent's own memory all live in one carefully modeled schema. We wanted real full-text search, so we wrote B M 25 ranking in plain SQL, with no extensions and no separate vector database, which means it runs on standard Postgres unchanged. Aurora gives us managed durability and automatic serverless scaling that handles a quiet vault and a sudden burst equally well, while staying standard Postgres, so there is no proprietary lock-in. The whole app runs on Vercel with the agent in-process. One agent, one retrieval path, ready to ship.

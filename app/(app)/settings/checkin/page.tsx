@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { CalendarCheck, ShieldCheck, Bell } from "lucide-react"
 import { db } from "@/lib/db"
 import { PageHeader } from "@/components/page-header"
@@ -18,7 +19,7 @@ function formatDate(iso: string) {
 }
 
 export default async function CheckinSettingsPage() {
-  const checkin = await db.getCheckin()
+  const [checkin, telegramConnected] = await Promise.all([db.getCheckin(), db.hasTelegramOwnerLink()])
   const remaining = checkin.threshold - checkin.missedCount
   const pct = (remaining / checkin.threshold) * 100
 
@@ -70,10 +71,21 @@ export default async function CheckinSettingsPage() {
           <CardContent className="flex flex-col gap-4 text-sm leading-relaxed text-muted-foreground">
             <div className="flex gap-3">
               <Bell className="mt-0.5 size-4 shrink-0 text-accent-foreground" />
-              <p>
-                <span className="font-medium text-foreground">Missed check-ins</span> trigger gentle WhatsApp nudges to
-                you first — most are resolved here.
-              </p>
+              {telegramConnected ? (
+                <p>
+                  <span className="font-medium text-foreground">Missed check-ins</span> trigger gentle Telegram nudges
+                  to you first — most are resolved here.
+                </p>
+              ) : (
+                <p>
+                  <span className="font-medium text-foreground">Missed check-ins</span> nudge you on Telegram first — but
+                  you haven&apos;t connected it yet.{" "}
+                  <Link href="/people" className="font-medium text-primary underline-offset-4 hover:underline">
+                    Connect Telegram
+                  </Link>{" "}
+                  to enable check-in reminders.
+                </p>
+              )}
             </div>
             <Separator />
             <div className="flex gap-3">

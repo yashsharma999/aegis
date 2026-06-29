@@ -1,0 +1,1 @@
+next.js, react, typescript, tailwindcss, shadcn-ui, mastra, ai-sdk, anthropic, claude, better-auth, drizzle-orm, postgresql, amazon-aurora, aws-s3, vercel, tiptap, bm25, telegram, whatsapp, zod, unpdf

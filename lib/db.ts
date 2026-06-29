@@ -334,6 +334,18 @@ export const db = {
     return code
   },
 
+  // Has the owner linked their own Telegram account? Gates the Telegram-only
+  // features (e.g. check-in nudges) in the UI.
+  hasTelegramOwnerLink: async (): Promise<boolean> => {
+    const id = await uid()
+    if (!id) return false
+    const [row] = await orm
+      .select({ telegramUserId: schema.telegramLink.telegramUserId })
+      .from(schema.telegramLink)
+      .where(and(eq(schema.telegramLink.userId, id), eq(schema.telegramLink.role, 'owner')))
+    return !!row
+  },
+
   // Credentials are SHIELDED from the agent: stored here, never chunked/indexed,
   // and surfaced by no agent tool.
   getCredentials: async (): Promise<Credential[]> => {

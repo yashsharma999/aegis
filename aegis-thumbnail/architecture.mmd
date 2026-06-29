@@ -1,0 +1,57 @@
+flowchart TB
+  subgraph Clients["Clients"]
+    WEB["Web App<br/>Next.js, React, Tailwind, shadcn/ui<br/>TipTap notes editor"]
+    TG["Telegram"]
+    WA["WhatsApp"]
+  end
+
+  subgraph Vercel["Vercel  (Next.js, serverless functions, Node runtime, 60s)"]
+    MW["Middleware<br/>Better Auth session +<br/>beneficiary grant token"]
+    subgraph API["API Routes"]
+      STREAM["/api/agent/stream<br/>streams NDJSON to browser"]
+      HIST["/api/agent/threads<br/>/api/agent/history"]
+      TGH["/api/telegram<br/>webhook"]
+      WAH["/api/whatsapp<br/>webhook"]
+      AUTH["/api/auth"]
+    end
+    AGENT["Mastra Agent (in-process via AI SDK)<br/>tools: searchVault, readDocument,<br/>getDocumentLink, getReminders, getContacts"]
+    BM25["BM25 full-text retrieval<br/>plain SQL, no extensions, no vector DB"]
+  end
+
+  ANTHROPIC["Anthropic Claude API<br/>(model router)"]
+
+  subgraph AWS["AWS"]
+    AURORA[("Amazon Aurora<br/>PostgreSQL Serverless v2<br/>Drizzle ORM<br/>users, documents, chunks,<br/>notes, contacts, reminders, agent memory")]
+    S3[("AWS S3<br/>original files<br/>short-lived presigned links")]
+  end
+
+  WEB --> MW
+  MW --> STREAM
+  MW --> HIST
+  MW --> AUTH
+  TG --> TGH
+  WA --> WAH
+
+  STREAM --> AGENT
+  TGH --> AGENT
+  WAH --> AGENT
+
+  AGENT --> BM25
+  AGENT --> ANTHROPIC
+  AGENT --> S3
+  AGENT --> AURORA
+  BM25 --> AURORA
+  AUTH --> AURORA
+  HIST --> AURORA
+
+  classDef client fill:#EAF1F8,stroke:#3B6FB0,color:#16263B;
+  classDef vercel fill:#EDEEF3,stroke:#2C3350,color:#1A1F38;
+  classDef agent fill:#F6E8C8,stroke:#7A5C1E,color:#3A2E12;
+  classDef data fill:#FDF0D5,stroke:#9A6A1E,color:#3A2A12;
+  classDef ext fill:#E9E4F2,stroke:#5B4B8A,color:#241B3D;
+
+  class WEB,TG,WA client;
+  class MW,STREAM,HIST,TGH,WAH,AUTH vercel;
+  class AGENT,BM25 agent;
+  class AURORA,S3 data;
+  class ANTHROPIC ext;

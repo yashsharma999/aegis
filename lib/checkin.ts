@@ -1,6 +1,6 @@
 // The mode/state-machine transitions, called by the /trigger demo buttons.
 //
-// TODO: production cron pings owner via WhatsApp; missed check-ins advance toward
+// TODO: production cron pings owner via Telegram; missed check-ins advance toward
 // legacy activation; emergency/guardian modes are entered explicitly.
 
 import type { AppMode, TimelineEvent, TriggerState } from './types'
@@ -36,7 +36,7 @@ export const transitions = {
         prev,
         prev.mode === 'everyday' ? 'everyday' : prev.mode,
         'Missed check-in',
-        `Owner missed a check-in (${missedCount}/${threshold}). A WhatsApp nudge was sent.`,
+        `Owner missed a check-in (${missedCount}/${threshold}). A Telegram nudge was sent.`,
       )
     }
     return withEvent(
