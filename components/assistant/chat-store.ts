@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useSyncExternalStore } from 'react'
 import { usePathname } from 'next/navigation'
-import { mastraClientFor, VAULT_AGENT_ID } from '@/lib/mastra-client'
+import { streamAgent, fetchHistory } from '@/lib/agent-transport'
 
 export type ChatPart =
   | { type: 'text'; text: string }
@@ -137,10 +137,8 @@ async function hydrate(s: Session) {
   if (s.hydrated) return
   s.hydrated = true
   try {
-    const res = await mastraClientFor(s.auth).listThreadMessages(s.threadId, {
-      agentId: VAULT_AGENT_ID,
-    })
-    const prior = (((res as any)?.messages ?? []).map(mapDbMessage).filter(Boolean)) as Bubble[]
+    const messages = await fetchHistory(s.auth, s.threadId, s.resource)
+    const prior = (messages.map(mapDbMessage).filter(Boolean)) as Bubble[]
     if (prior.length) {
       s.messages = [...prior, ...s.messages]
       emit(s)
@@ -196,11 +194,11 @@ async function send(s: Session, text: string, onActivity?: () => void) {
   }
 
   try {
-    const agent = mastraClientFor(s.auth).getAgent(VAULT_AGENT_ID)
-    const res = await agent.stream([{ role: 'user', content: trimmed }], {
-      memory: { thread: s.threadId, resource: s.resource },
-    })
-    await res.processDataStream({ onChunk })
+    await streamAgent(
+      s.auth,
+      { messages: [{ role: 'user', content: trimmed }], memory: { thread: s.threadId, resource: s.resource } },
+      onChunk,
+    )
   } catch {
     patch(s, agentId, (parts) => [...parts, { type: 'text', text: 'Sorry, something went wrong.' }])
   } finally {

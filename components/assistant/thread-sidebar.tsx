@@ -5,10 +5,8 @@ import { usePathname } from 'next/navigation'
 import { Plus, MessageSquare, Trash2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { mastraClientFor, VAULT_AGENT_ID } from '@/lib/mastra-client'
+import { listThreads, deleteThread, type ThreadRow } from '@/lib/agent-transport'
 import { threadIdFromPath } from './chat-store'
-
-type ThreadRow = { id: string; title?: string; updatedAt?: string }
 
 export function ThreadSidebar({
   userId,
@@ -26,14 +24,7 @@ export function ThreadSidebar({
 
   const refresh = useCallback(async () => {
     try {
-      const res = await mastraClientFor({ userId }).listMemoryThreads({
-        page: 0,
-        perPage: 50,
-        agentId: VAULT_AGENT_ID,
-        resourceId: userId,
-        orderBy: { field: 'updatedAt', direction: 'DESC' },
-      } as never)
-      setThreads((((res as any)?.threads ?? []) as ThreadRow[]).filter((t) => t.id))
+      setThreads(await listThreads({ userId }))
     } catch {
       setThreads([])
     }
@@ -45,7 +36,7 @@ export function ThreadSidebar({
 
   const remove = async (id: string) => {
     try {
-      await mastraClientFor({ userId }).deleteThread(id, { agentId: VAULT_AGENT_ID } as never)
+      await deleteThread({ userId }, id)
       if (id === activeThreadId) onNew()
       void refresh()
     } catch {
