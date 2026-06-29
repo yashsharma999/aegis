@@ -76,7 +76,7 @@ export function ConnectTelegramButton() {
           {code ? (
             <>
               <div className="flex items-center gap-2 rounded-xl border bg-secondary/50 p-2">
-                <code className="flex-1 truncate px-2 font-mono text-lg tracking-widest">{code}</code>
+                <code className="min-w-0 flex-1 truncate px-2 font-mono text-lg tracking-widest">{code}</code>
                 <Button size="icon" variant="ghost" onClick={copy} className="shrink-0">
                   {copied ? <Check className="size-4 text-success" /> : <Copy className="size-4" />}
                   <span className="sr-only">Copy code</span>

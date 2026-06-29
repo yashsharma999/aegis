@@ -90,7 +90,7 @@ export function LegacyAccessButton({ beneficiaryId, name }: { beneficiaryId: str
           {link ? (
             <>
               <div className="flex items-center gap-2 rounded-xl border bg-secondary/50 p-2">
-                <code className="flex-1 truncate px-2 text-sm">{link}</code>
+                <code className="min-w-0 flex-1 truncate px-2 text-sm">{link}</code>
                 <Button size="icon" variant="ghost" onClick={copy} className="shrink-0">
                   {copied ? <Check className="size-4 text-success" /> : <Copy className="size-4" />}
                   <span className="sr-only">Copy link</span>
