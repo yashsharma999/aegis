@@ -20,6 +20,13 @@ export interface IngestResult {
   pageCount: number
 }
 
+// Postgres text columns reject NUL (0x00); PDF text extraction can emit it (and
+// other stray C0 control chars). Strip them, keeping tab/newline/carriage return.
+function sanitizeText(s: string): string {
+  // eslint-disable-next-line no-control-regex
+  return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+}
+
 // ── Core: persist a document row + its chunks ────────────────────────────────
 
 interface IndexItemInput {
@@ -40,7 +47,8 @@ interface IndexItemInput {
 }
 
 async function indexItem(input: IndexItemInput): Promise<IngestResult> {
-  const chunks = chunkText(input.text)
+  const chunks = chunkText(sanitizeText(input.text))
+  const body = input.body != null ? sanitizeText(input.body) : null
   const now = new Date().toISOString()
 
   await orm.transaction(async (tx) => {
@@ -51,7 +59,7 @@ async function indexItem(input: IndexItemInput): Promise<IngestResult> {
       category: input.category,
       title: input.title,
       fileName: input.fileName ?? null,
-      body: input.body ?? null,
+      body,
       notes: input.notes ?? '',
       sensitive: input.sensitive ?? false,
       uploadedAt: now,
@@ -179,7 +187,8 @@ export interface ReindexNoteInput {
 
 // Re-author an existing note: replace its chunks and update the row in one txn.
 export async function reindexNote(input: ReindexNoteInput): Promise<IngestResult> {
-  const chunks = chunkText(input.body)
+  const body = sanitizeText(input.body)
+  const chunks = chunkText(body)
   const now = new Date().toISOString()
 
   await orm.transaction(async (tx) => {
@@ -196,7 +205,7 @@ export async function reindexNote(input: ReindexNoteInput): Promise<IngestResult
       .set({
         title: input.title.trim() || 'Untitled note',
         category: input.category,
-        body: input.body,
+        body,
         notes: input.notes ?? '',
         sensitive: input.sensitive ?? false,
         updatedAt: now,

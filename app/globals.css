@@ -204,4 +204,10 @@
     letter-spacing: 0.1em;
     color: var(--muted-foreground);
   }
+
+  /* Sonner's default toast description is too faint on the light theme. */
+  .cn-toast [data-description] {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
 }

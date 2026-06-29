@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Plus } from "lucide-react"
+import { useFormStatus } from "react-dom"
+import { Plus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -36,17 +37,26 @@ const ERROR_MESSAGES: Record<string, string> = {
   parse_failed: "We couldn't read that file. Try another one.",
 }
 
+// Submit button lives in its own component so useFormStatus can read the
+// enclosing <form>'s pending state (it only works from a child of the form).
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending && <Loader2 data-icon="inline-start" className="animate-spin" />}
+      {pending ? "Saving..." : "Save to vault"}
+    </Button>
+  )
+}
+
 export function AddDocumentDialog() {
   const [open, setOpen] = useState(false)
-  const [pending, setPending] = useState(false)
   const [needsPassword, setNeedsPassword] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
   async function action(formData: FormData) {
-    setPending(true)
     setPasswordError(null)
     const result = await addDocument(formData)
-    setPending(false)
 
     if (result.ok) {
       setOpen(false)
@@ -156,9 +166,7 @@ export function AddDocumentDialog() {
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={pending}>
-              {pending ? "Saving..." : "Save to vault"}
-            </Button>
+            <SubmitButton />
           </DialogFooter>
         </form>
       </DialogContent>

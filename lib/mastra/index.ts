@@ -16,7 +16,8 @@ export const mastra = new Mastra({
   agents: { vaultAgent },
   storage,
   server: {
-    port: Number(process.env.MASTRA_PORT ?? 4111),
+    // Railway/most PaaS inject a dynamic PORT; fall back to MASTRA_PORT for local.
+    port: Number(process.env.PORT ?? process.env.MASTRA_PORT ?? 4111),
     cors: {
       origin: webOrigin,
       allowMethods: ['GET', 'POST', 'OPTIONS'],

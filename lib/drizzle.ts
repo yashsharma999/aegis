@@ -10,6 +10,7 @@
 
 import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
+import { pgSsl } from './pg-ssl'
 import * as schema from './schema'
 
 const connectionString = process.env.DATABASE_URL
@@ -17,7 +18,8 @@ const connectionString = process.env.DATABASE_URL
 // Reuse the pool across hot reloads in development to avoid exhausting connections.
 const globalForDb = globalThis as unknown as { __aegisPool?: Pool }
 
-const pool = globalForDb.__aegisPool ?? new Pool({ connectionString })
+// SSL is off for local Docker Postgres and on for Aurora — see lib/pg-ssl.ts.
+const pool = globalForDb.__aegisPool ?? new Pool({ connectionString, ssl: pgSsl() })
 if (process.env.NODE_ENV !== 'production') globalForDb.__aegisPool = pool
 
 export const db = drizzle(pool, { schema })

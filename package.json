@@ -11,12 +11,14 @@
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:migrate": "tsx scripts/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
     "retrieve": "tsx scripts/retrieve.ts",
     "eval": "tsx scripts/eval.ts",
-    "mastra:dev": "mastra dev --dir lib/mastra --env .env.local"
+    "mastra:dev": "mastra dev --dir lib/mastra --env .env.local",
+    "mastra:build": "mastra build --dir lib/mastra",
+    "mastra:start": "mastra start"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1070.0",
